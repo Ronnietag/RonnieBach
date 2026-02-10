@@ -166,8 +166,16 @@ function German() {
       </section>
 
       {/* Footer */}
-      <footer className="german-footer">
-        <p>© 2026 Ronnie. All rights reserved.</p>
+      <footer className="footer">
+        <div className="footer-logo-center">
+          <div className="footer-logo"></div>
+        </div>
+        <div className="footer-bottom">
+          <p>© 2026 Ronnie. All rights reserved.</p>
+          <p className="cyber-credit">
+            Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
+          </p>
+        </div>
       </footer>
     </div>
   )

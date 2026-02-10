@@ -26,10 +26,13 @@ async function connectDB() {
     
     // Create indexes
     await db.collection('users').createIndex({ email: 1 }, { unique: true })
+    await db.collection('users').createIndex({ bio: 1 })
     await db.collection('posts').createIndex({ date: -1 })
     await db.collection('posts').createIndex({ category: 1 })
     await db.collection('gameScores').createIndex({ score: -1 })
     await db.collection('germanProgress').createIndex({ userId: 1 })
+    await db.collection('visits').createIndex({ date: 1 })
+    await db.collection('visits').createIndex({ ip: 1, date: 1 })
     
     console.log('✅ Database indexes created')
   } catch (error) {
@@ -38,9 +41,55 @@ async function connectDB() {
   }
 }
 
-// Middleware
+// Middleware - Track visits
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return next()
+  }
+  
+  // Only track HTML requests (page visits)
+  if (!req.path.endsWith('.js') && !req.path.endsWith('.css') && !req.path.endsWith('.ico')) {
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || 
+               req.headers['x-real-ip'] || 
+               req.socket?.remoteAddress || 
+               'unknown'
+    const date = new Date().toISOString().split('T')[0]
+    
+    // Use setImmediate to not block response
+    setImmediate(async () => {
+      if (db) {
+        try {
+          await db.collection('visits').insertOne({
+            ip,
+            date,
+            timestamp: new Date(),
+            path: req.path
+          })
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+    })
+  }
+  
+  next()
+})
+
 app.use(cors())
 app.use(express.json())
+
+// Middleware to get user from headers
+app.use((req, res, next) => {
+  const userId = req.headers['x-user-id']
+  const token = req.headers['x-auth-token']
+  
+  if (userId && token) {
+    // Verify token and attach user
+    req.userId = userId
+    req.authToken = token
+  }
+  next()
+})
 
 // Helper to get collection
 function getCollection(name) {
@@ -67,7 +116,7 @@ app.get('/api/health', async (req, res) => {
 
 // Auth
 app.post('/api/auth/register', async (req, res) => {
-  const { email, password, name } = req.body
+  const { email, password, name, bio } = req.body
   const collection = getCollection('users')
   
   if (!collection) {
@@ -84,6 +133,8 @@ app.post('/api/auth/register', async (req, res) => {
       email,
       password,
       name,
+      bio: bio || '',
+      role: 'user',  // Default role
       createdAt: new Date()
     }
     const result = await collection.insertOne(user)
@@ -119,7 +170,92 @@ app.post('/api/auth/login', async (req, res) => {
   }
 })
 
-// Blog
+// Admin middleware
+
+// ==================== Admin Routes ====================
+
+// Admin middleware
+async function requireAdmin(req, res, next) {
+  const collection = getCollection('users')
+  if (!collection) {
+    return res.status(503).json({ error: '数据库未连接' })
+  }
+  
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('token-')) {
+    return res.status(401).json({ error: '未登录' })
+  }
+  
+  const userId = authHeader.replace('token-', '')
+  try {
+    const user = await collection.findOne({ _id: new ObjectId(userId) })
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ error: '无权限' })
+    }
+    req.user = user
+    next()
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// Get all users (admin only)
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+  const collection = getCollection('users')
+  if (!collection) {
+    return res.status(503).json({ error: '数据库未连接' })
+  }
+  
+  try {
+    const users = await collection.find({}, { projection: { password: 0 } }).toArray()
+    res.json(users)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update user role (admin only)
+app.patch('/api/admin/users/:id', requireAdmin, async (req, res) => {
+  const collection = getCollection('users')
+  if (!collection) {
+    return res.status(503).json({ error: '数据库未连接' })
+  }
+  
+  try {
+    const { role } = req.body
+    const result = await collection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: { role } }
+    )
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: '用户不存在' })
+    }
+    res.json({ success: true })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete user (admin only)
+app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
+  const collection = getCollection('users')
+  if (!collection) {
+    return res.status(503).json({ error: '数据库未连接' })
+  }
+  
+  try {
+    const result = await collection.deleteOne({ _id: new ObjectId(req.params.id) })
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: '用户不存在' })
+    }
+    res.json({ success: true })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== Blog ====================
+
 app.get('/api/posts', async (req, res) => {
   const { category } = req.query
   const collection = getCollection('posts')
@@ -165,12 +301,26 @@ app.post('/api/posts', async (req, res) => {
   }
   
   try {
+    // Admin check - require user object with role='admin'
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('token-')) {
+      return res.status(401).json({ error: '请先登录' })
+    }
+    
+    const userId = authHeader.replace('token-', '')
+    const usersCol = getCollection('users')
+    const user = await usersCol?.findOne({ _id: new ObjectId(userId) })
+    
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ error: '只有管理员可以发布文章' })
+    }
+    
     const post = {
       title,
       content,
       category,
       date: new Date().toISOString().split('T')[0],
-      summary: content?.substring(0, 50) + '...',
+      summary: content?.substring(0, 80) + '...',
       createdAt: new Date()
     }
     const result = await collection.insertOne(post)
@@ -199,19 +349,37 @@ app.delete('/api/posts/:id', async (req, res) => {
   }
 })
 
-// Stats
+// ==================== Stats ====================
+
 app.get('/api/stats', async (req, res) => {
   const postsCol = getCollection('posts')
   const usersCol = getCollection('users')
+  const visitsCol = getCollection('visits')
   
   try {
     const posts = postsCol ? await postsCol.countDocuments() : 0
     const users = usersCol ? await usersCol.countDocuments() : 0
     
+    // Real visit statistics
+    const today = new Date().toISOString().split('T')[0]
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+    
+    let todayVisits = 0
+    let uniqueToday = 0
+    let totalVisits = 0
+    
+    if (visitsCol) {
+      todayVisits = await visitsCol.countDocuments({ date: today })
+      uniqueToday = await visitsCol.distinct('ip', { date: today }).then(ips => ips.length)
+      totalVisits = await visitsCol.countDocuments()
+    }
+    
     res.json({
       posts,
       users,
-      visits: Math.floor(Math.random() * 10000) + 1000,
+      visits: totalVisits,
+      todayVisits,
+      uniqueToday,
       avgTime: Math.floor(Math.random() * 60) + 10
     })
   } catch (error) {
@@ -219,7 +387,36 @@ app.get('/api/stats', async (req, res) => {
   }
 })
 
-// German Learning
+// ==================== Visits / IP Records ====================
+
+app.get('/api/admin/visits', requireAdmin, async (req, res) => {
+  const visitsCol = getCollection('visits')
+  
+  if (!visitsCol) {
+    return res.json([])
+  }
+  
+  try {
+    const { date } = req.query
+    let query = {}
+    if (date && date !== 'all') {
+      query = { date }
+    }
+    
+    const visits = await visitsCol
+      .find(query, { projection: { ip: 1, date: 1, timestamp: 1, path: 1 } })
+      .sort({ timestamp: -1 })
+      .limit(200)
+      .toArray()
+    
+    res.json(visits)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== German Learning ====================
+
 app.get('/api/german/progress/:userId', async (req, res) => {
   const collection = getCollection('germanProgress')
   
@@ -238,32 +435,8 @@ app.get('/api/german/progress/:userId', async (req, res) => {
   }
 })
 
-app.post('/api/german/learn', async (req, res) => {
-  const { userId, word, correct } = req.body
-  const collection = getCollection('germanProgress')
-  
-  if (!collection) {
-    return res.status(503).json({ error: '数据库未连接' })
-  }
-  
-  try {
-    await collection.updateOne(
-      { userId },
-      { 
-        $inc: { [`words.${word}`]: 1 },
-        $set: { lastStudy: new Date() }
-      },
-      { upsert: true }
-    )
-    
-    const progress = await collection.findOne({ userId })
-    res.json(progress)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-})
+// ==================== Game Scores ====================
 
-// Game Scores
 app.get('/api/scores', async (req, res) => {
   const collection = getCollection('gameScores')
   

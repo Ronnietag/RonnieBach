@@ -6,13 +6,15 @@ interface User {
   id: string
   email: string
   name: string
+  bio?: string
+  role?: string
 }
 
 interface AuthContextType {
   user: User | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string, name: string) => Promise<void>
+  register: (email: string, password: string, name: string, bio?: string) => Promise<void>
   logout: () => void
 }
 
@@ -48,11 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('ronnie_user', JSON.stringify(data.user))
   }
 
-  async function register(email: string, password: string, name: string) {
+  async function register(email: string, password: string, name: string, bio?: string) {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, name })
+      body: JSON.stringify({ email, password, name, bio })
     })
     const data = await res.json()
     if (data.error) throw new Error(data.error)

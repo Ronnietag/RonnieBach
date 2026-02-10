@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './index.css'
-import { blogCount } from './data/blogs'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Resume from './Resume'
 import Blog from './Blog'
 import Chart from './Chart'
 import German from './German'
 import Games from './Games'
+import Admin from './Admin'
+import SnakePage from './SnakePage'
+import BreakoutPage from './BreakoutPage'
+import BrickBreakerPage from './BrickBreakerPage'
 
 // Icons
 const ArrowRight = () => (
@@ -102,7 +105,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
   onSwitchMode: () => void
 }) {
   const { login, register } = useAuth()
-  const [formData, setFormData] = useState({ email: '', password: '', name: '', confirmPassword: '' })
+  const [formData, setFormData] = useState({ email: '', password: '', name: '', bio: '', confirmPassword: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -119,10 +122,10 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
         if (formData.password !== formData.confirmPassword) {
           throw new Error('两次密码输入不一致')
         }
-        await register(formData.email, formData.password, formData.name)
+        await register(formData.email, formData.password, formData.name, formData.bio)
       }
       onClose()
-      setFormData({ email: '', password: '', name: '', confirmPassword: '' })
+      setFormData({ email: '', password: '', name: '', bio: '', confirmPassword: '' })
     } catch (err: any) {
       setError(err.message || '操作失败，请稍后重试')
     } finally {
@@ -202,6 +205,27 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
             </div>
           )}
           
+          {mode === 'register' && (
+            <div className="form-group">
+              <label>介绍一下自己 <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>(选填)</span></label>
+              <textarea
+                placeholder="介绍一下自己..."
+                value={formData.bio}
+                onChange={e => setFormData({...formData, bio: e.target.value})}
+                rows={3}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  fontFamily: 'inherit',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+          )}
+          
           {mode === 'login' && (
             <div className="form-options">
               <label className="remember-me">
@@ -237,6 +261,7 @@ function AppContent() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const [stats, setStats] = useState({ posts: 0, users: 0, visits: 0 })
   const heroRef = useRef<HTMLDivElement>(null)
   const { user, logout } = useAuth()
 
@@ -253,6 +278,14 @@ function AppContent() {
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Fetch stats
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => setStats(data))
+      .catch(() => {})
   }, [])
 
   const navigate = useNavigate()
@@ -274,8 +307,24 @@ function AppContent() {
     return <German />
   }
   
+  if (location.pathname === '/games/snake' || location.pathname === '/games/snake/') {
+    return <SnakePage />
+  }
+  
+  if (location.pathname === '/games/breakout' || location.pathname === '/games/breakout/') {
+    return <BreakoutPage />
+  }
+  
+  if (location.pathname === '/games/brickbreaker' || location.pathname === '/games/brickbreaker/') {
+    return <BrickBreakerPage />
+  }
+  
   if (location.pathname === '/games' || location.pathname === '/games.html' || location.pathname === '/games/') {
     return <Games />
+  }
+  
+  if (location.pathname === '/admin' || location.pathname === '/admin/') {
+    return <Admin />
   }
 
   return (
@@ -313,8 +362,9 @@ function AppContent() {
           </h1>
           <p className="hero-subtitle">致力于用技术改变生活</p>
           <p className="hero-desc">
-            热爱探索新技术，专注于 AI 应用开发与创新<br/>
-            相信科技可以让生活更美好，让世界更简单
+            对新技术发自内心的喜爱和好奇<br/>
+            对自己产品和代码的尊重与自豪<br/>
+            是技术人员从优秀走向杰出的关键因素
           </p>
           <div className="tags">
             <button className="chip">人工智能</button>
@@ -387,7 +437,7 @@ function AppContent() {
             
             {showMenu && (
               <div className="menu-dropdown">
-                <button onClick={() => { navigate('/resume/'); setShowMenu(false); }}>简历</button>
+                <button onClick={() => { navigate('/resume/'); setShowMenu(false); }}>介绍</button>
                 <button onClick={() => { navigate('/blog'); setShowMenu(false); }}>博客</button>
                 <button onClick={() => { navigate('/chart'); setShowMenu(false); }}>报表</button>
                 <button onClick={() => { navigate('/german'); setShowMenu(false); }}>德语</button>
@@ -403,6 +453,9 @@ function AppContent() {
                 <UserIcon />
               </button>
               <div className="user-dropdown">
+                {user.role === 'admin' && (
+                  <button onClick={() => navigate('/admin')}>管理后台</button>
+                )}
                 <button onClick={logout}>退出登录</button>
               </div>
             </div>
@@ -432,7 +485,7 @@ function AppContent() {
           <div className="stat-label">年工作经验</div>
         </div>
         <div className="stat-item">
-          <div className="stat-value">{blogCount}</div>
+          <div className="stat-value">{stats.posts}</div>
           <div className="stat-label">篇博客</div>
         </div>
         <div className="stat-item">
@@ -462,8 +515,7 @@ function AppContent() {
             <div className="card-icon-wrapper">
               <ResumeIcon />
             </div>
-            <h3 className="card-title">个人简历</h3>
-            <p className="card-desc">了解我的职业历程、技能专长与项目经验。</p>
+            <h3 className="card-title">个人介绍</h3>
             <div className="card-arrow">
               了解更多
               <ArrowRight />
@@ -538,19 +590,14 @@ function AppContent() {
 
       {/* Footer */}
       <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-left">
-            <div className="footer-logo"></div>
-            <p className="footer-desc">
-              致力于用技术改变生活<br/>
-              相信科技可以让生活更美好
-            </p>
-          </div>
-          <div className="footer-right">
-          </div>
+        <div className="footer-logo-center">
+          <div className="footer-logo"></div>
         </div>
         <div className="footer-bottom">
           <p>© 2026 Ronnie. All rights reserved.</p>
+          <p className="cyber-credit">
+            Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
+          </p>
         </div>
       </footer>
 
