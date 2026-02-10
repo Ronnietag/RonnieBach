@@ -10,7 +10,6 @@ import Games from './Games'
 import Admin from './Admin'
 import SnakePage from './SnakePage'
 import BreakoutPage from './BreakoutPage'
-import BrickBreakerPage from './BrickBreakerPage'
 
 // Icons
 const ArrowRight = () => (
@@ -313,10 +312,6 @@ function AppContent() {
   
   if (location.pathname === '/games/breakout' || location.pathname === '/games/breakout/') {
     return <BreakoutPage />
-  }
-  
-  if (location.pathname === '/games/brickbreaker' || location.pathname === '/games/brickbreaker/') {
-    return <BrickBreakerPage />
   }
   
   if (location.pathname === '/games' || location.pathname === '/games.html' || location.pathname === '/games/') {

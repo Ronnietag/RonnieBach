@@ -42,13 +42,6 @@ const gameCards: GameCardData[] = [
     icon: '🐍',
     gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
     desc: '控制贪吃蛇吃到食物，越长越高分！'
-  },
-  {
-    id: 'brickbreaker',
-    name: '砖块破坏者',
-    icon: '🧱',
-    gradient: 'linear-gradient(135deg, #00ffff 0%, #ff00ff 100%)',
-    desc: '全息投影风格 - 10关Roguelike打砖块!'
   }
 ]
 
