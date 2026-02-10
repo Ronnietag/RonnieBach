@@ -884,6 +884,7 @@ section {
   background-clip: text;
   margin-bottom: 8px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .stat-label {
@@ -892,6 +893,7 @@ section {
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--color-secondary);
+  white-space: nowrap;
 }
 
 /* Bento Grid */
@@ -995,7 +997,7 @@ section {
   color: var(--color-secondary);
   font-size: 14px;
   font-weight: 500;
-  margin-top: 20px;
+  margin-top: auto;
   opacity: 0;
   transform: translateX(-12px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1056,12 +1058,24 @@ section {
 
 /* Footer */
 .footer {
-  padding: 56px 32px;
+  padding: 40px 32px;
   text-align: center;
   background: linear-gradient(180deg, var(--color-surface-elevated) 0%, var(--color-surface) 100%);
   border-top: 1px solid var(--color-border-light);
   margin-top: 80px;
   position: relative;
+}
+
+.footer-logo-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.footer-logo {
+  width: 48px;
+  height: 48px;
+  background: url("/logo.png") center/contain no-repeat;
 }
 
 .footer::before {
@@ -1076,16 +1090,50 @@ section {
   border-radius: 0 0 4px 4px;
 }
 
-.footer-logo {
-  width: 80px;
-  height: 80px;
-  background: url("/logo.png") center/contain no-repeat;
-  margin: 0 auto 16px;
-}
-
 .footer p {
   font-size: 14px;
   color: var(--color-text-tertiary);
+}
+
+.footer-bottom .cyber-credit {
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+}
+
+.credit-name,
+.credit-tech,
+.credit-model {
+  position: relative;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.credit-name::after,
+.credit-tech::after,
+.credit-model::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+}
+
+.credit-name:hover,
+.credit-tech:hover,
+.credit-model:hover {
+  transform: translateY(-2px);
+  color: var(--color-text-primary);
+}
+
+.credit-name:hover::after,
+.credit-tech:hover::after,
+.credit-model:hover::after {
+  width: 100%;
 }
 
 /* Responsive */
@@ -1141,14 +1189,13 @@ section {
   }
   
   .stats-bar {
-    flex-wrap: wrap;
     gap: 24px;
     margin: 0 16px 32px;
     padding: 32px 24px;
   }
   
   .stat-item {
-    flex: 1 1 40%;
+    flex: 0 0 auto;
     padding: 16px;
   }
   

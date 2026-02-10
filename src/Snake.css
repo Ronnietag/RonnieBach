@@ -1,0 +1,145 @@
+/* Snake Game */
+.snake-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.snake-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.snake-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.snake-score {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-secondary);
+  padding: 8px 20px;
+  background: var(--color-surface-variant);
+  border-radius: 100px;
+}
+
+.snake-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--color-border-light);
+  padding: 4px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-3);
+}
+
+.snake-row {
+  display: flex;
+  gap: 2px;
+}
+
+.snake-cell {
+  width: 20px;
+  height: 20px;
+  background: var(--color-surface-elevated);
+  border-radius: 4px;
+  transition: background 0.1s ease;
+}
+
+.snake-cell.snake {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+.snake-cell.snake-head {
+  background: var(--color-secondary);
+  border-radius: 6px;
+}
+
+.snake-cell.food {
+  background: var(--color-accent);
+  border-radius: 50%;
+  animation: pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+.snake-controls {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.snake-controls .start-btn {
+  padding: 16px 48px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.snake-controls .start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px #1a1a3e4d;
+}
+
+.game-over {
+  text-align: center;
+}
+
+.game-over h3 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
+}
+
+.game-over p {
+  font-size: 18px;
+  color: var(--color-text-secondary);
+  margin-bottom: 24px;
+}
+
+.snake-instructions {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.snake-instructions p {
+  font-size: 14px;
+  color: var(--color-text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .snake-cell {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .snake-header h2 {
+    font-size: 24px;
+  }
+  
+  .snake-score {
+    font-size: 16px;
+  }
+}

@@ -115,7 +115,7 @@
 
 .category-btn.active {
   background: var(--gradient-primary);
-  border-color: transparent;
+  border: none;
   color: white;
 }
 
