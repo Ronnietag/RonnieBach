@@ -7,77 +7,80 @@ const BackIcon = () => (
   </svg>
 )
 
-interface WordCard {
-  german: string
-  chinese: string
-  example?: string
-  category: string
+interface Word {
+  id: number
+  word: string
+  chinese_meaning: string
+  examples?: { sentence: string; translation: string }[]
+  topic_id: number
+  cefr_level: string
 }
 
-interface Progress {
-  words: Record<string, number>
-  lastStudy: string | null
-  streak: number
+interface Topic {
+  id: number
+  name_de: string
+  name_zh: string
+  order: number
 }
 
-const vocabulary: Record<string, WordCard[]> = {
-  'Greetings': [
-    { german: 'Guten Tag', chinese: '你好', example: 'Guten Tag, wie geht es Ihnen?', category: 'Greetings' },
-    { german: 'Hallo', chinese: '哈喽', example: 'Hallo, schön dich kennenzulernen!', category: 'Greetings' },
-    { german: 'Auf Wiedersehen', chinese: '再见', example: 'Auf Wiedersehen, bis morgen!', category: 'Greetings' },
-    { german: 'Danke', chinese: '谢谢', example: 'Vielen Dank für Ihre Hilfe!', category: 'Greetings' },
-    { german: 'Bitte', chinese: '请/不客气', example: 'Bitte schön!', category: 'Greetings' },
-    { german: 'Ja', chinese: '是', example: 'Ja, das ist richtig.', category: 'Greetings' },
-    { german: 'Nein', chinese: '否/不是', example: 'Nein, danke.', category: 'Greetings' }
-  ],
-  'Basics': [
-    { german: 'Guten Morgen', chinese: '早上好', example: 'Guten Morgen!', category: 'Basics' },
-    { german: 'Guten Abend', chinese: '晚上好', example: 'Guten Abend!', category: 'Basics' },
-    { german: 'Gute Nacht', chinese: '晚安', example: 'Gute Nacht!', category: 'Basics' }
-  ],
-  'Numbers': [
-    { german: 'Eins', chinese: '一', example: 'Ich habe eins, zwei, drei.', category: 'Numbers' },
-    { german: 'Zwei', chinese: '二', example: 'Zwei Äpfel, bitte.', category: 'Numbers' },
-    { german: 'Drei', chinese: '三', category: 'Numbers' },
-    { german: 'Vier', chinese: '四', category: 'Numbers' },
-    { german: 'Fünf', chinese: '五', category: 'Numbers' },
-    { german: 'Sechs', chinese: '六', category: 'Numbers' },
-    { german: 'Sieben', chinese: '七', category: 'Numbers' },
-    { german: 'Acht', chinese: '八', category: 'Numbers' },
-    { german: 'Neun', chinese: '九', category: 'Numbers' },
-    { german: 'Zehn', chinese: '十', category: 'Numbers' }
-  ],
-  'Food': [
-    { german: 'Wasser', chinese: '水', example: 'Ein Glas Wasser, bitte.', category: 'Food' },
-    { german: 'Brot', chinese: '面包', example: 'Ich möchte Brot kaufen.', category: 'Food' },
-    { german: 'Kaffee', chinese: '咖啡', example: 'Ein Kaffee, bitte.', category: 'Food' },
-    { german: 'Apfel', chinese: '苹果', example: 'Ein roter Apfel.', category: 'Food' },
-    { german: 'Milch', chinese: '牛奶', example: 'Milch ist gesund.', category: 'Food' }
-  ]
-}
-
-const categories = ['Greetings', 'Basics', 'Numbers', 'Food']
-
-// Demo user ID for local development
 const DEMO_USER_ID = 'demo-user'
 
 function German() {
-  const [activeCategory, setActiveCategory] = useState('Greetings')
+  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [activeTopicId, setActiveTopicId] = useState<number>(0)  // Store topic_id for API filtering
   const [flippedCards, setFlippedCards] = useState<Record<string, boolean>>({})
-  const [progress, setProgress] = useState<Progress>({ words: {}, lastStudy: null, streak: 0 })
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [allWords, setAllWords] = useState<Word[]>([])  // Store all words
+  const [filteredWords, setFilteredWords] = useState<Word[]>([])  // Store filtered words
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchProgress()
+    fetchTopics()
   }, [])
 
-  async function fetchProgress() {
+  // Fetch vocabulary when topic changes
+  useEffect(() => {
+    fetchVocabulary(activeTopicId === 0 ? undefined : activeTopicId)
+  }, [activeTopicId])
+
+  async function fetchTopics() {
     try {
-      const res = await fetch(`/api/german/progress/${DEMO_USER_ID}`)
+      const res = await fetch('/api/german/topics')
       const data = await res.json()
-      setProgress(data)
+      setTopics(data)
+      // Topics loaded, now fetch vocabulary
+      fetchVocabulary(undefined)
     } catch (e) {
-      console.error('获取学习进度失败:', e)
+      console.error('获取主题失败:', e)
+      setLoading(false)
     }
+  }
+
+  async function fetchVocabulary(topicId?: number) {
+    try {
+      setLoading(true)
+      const url = topicId ? `/api/german/vocabulary?topic_id=${topicId}` : '/api/german/vocabulary'
+      const res = await fetch(url)
+      const words: Word[] = await res.json()
+      
+      setAllWords(prev => {
+        // If no filter, store all words
+        if (!topicId) return words
+        // If filtered, keep previous allWords and add filtered results
+        return prev.length > 0 ? prev : words
+      })
+      
+      setFilteredWords(words)
+    } catch (e) {
+      console.error('获取词汇失败:', e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function handleCategoryClick(category: string, topicId: number) {
+    setActiveCategory(category)
+    setActiveTopicId(topicId)
   }
 
   async function handleCardClick(index: string, word: string) {
@@ -93,31 +96,19 @@ function German() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: DEMO_USER_ID, word, correct: true })
       })
-      fetchProgress()
     } catch (e) {
       console.error('保存学习进度失败:', e)
     }
   }
 
-  function getStudyCount(word: string): number {
-    return progress.words?.[word] || 0
-  }
-
   return (
     <div className="german">
-      {/* Progress Bar */}
-      <div className="progress-bar"></div>
-
       {/* Header */}
       <header className="german-header">
         <button className="back-btn" onClick={() => window.history.back()}>
           <BackIcon />
           返回首页
         </button>
-        <div className="german-progress">
-          <span>学习天数: {progress.streak || 1}</span>
-          <span>已学: {Object.keys(progress.words || {}).length} 个词</span>
-        </div>
       </header>
 
       {/* Hero */}
@@ -128,54 +119,66 @@ function German() {
 
       {/* Categories */}
       <section className="german-categories">
-        {categories.map(cat => (
+        <div className="category-scroll">
           <button
-            key={cat}
-            className={`category-btn ${activeCategory === cat ? 'active' : ''}`}
-            onClick={() => setActiveCategory(cat)}
+            className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
+            onClick={() => handleCategoryClick('all', 0)}
           >
-            {cat}
+            全部
           </button>
-        ))}
+          {topics.map((topic: Topic) => (
+            <button
+              key={topic.id}
+              className={`category-btn ${activeCategory === topic.name_zh ? 'active' : ''}`}
+              onClick={() => handleCategoryClick(topic.name_zh, topic.id)}
+            >
+              {topic.name_zh}
+            </button>
+          ))}
+        </div>
       </section>
 
       {/* Vocabulary Cards */}
       <section className="german-cards">
-        {vocabulary[activeCategory]?.map((word, index) => {
-          const cardKey = `${activeCategory}-${index}`
-          const studyCount = getStudyCount(word.german)
-          return (
-            <div 
-              key={index} 
-              className={`german-card ${flippedCards[cardKey] ? 'flipped' : ''} ${studyCount > 0 ? 'studied' : ''}`}
-              onClick={() => handleCardClick(cardKey, word.german)}
-            >
-              <div className="card-front">
-                <span className="card-category">{word.category}</span>
-                <h3>{word.german}</h3>
-                <span className="card-hint">点击查看释义</span>
-                {studyCount > 0 && <span className="card-count">已学 {studyCount} 次</span>}
-              </div>
-              <div className="card-back">
-                <h3>{word.chinese}</h3>
-                {word.example && <p className="card-example">{word.example}</p>}
-              </div>
-            </div>
-          )
-        })}
+        {loading ? (
+          <div className="loading-state">
+            <div className="spinner"></div>
+            <p>加载词汇中...</p>
+          </div>
+        ) : (
+          <>
+            {(activeCategory === 'all' ? allWords : filteredWords).map((word, index) => {
+              const cardKey = `${word.word}-${index}` // Unique key per card
+              return (
+                <div 
+                  key={cardKey} 
+                  className={`german-card ${flippedCards[cardKey] ? 'flipped' : ''}`}
+                  onClick={() => handleCardClick(cardKey, word.word)}
+                >
+                  <div className="card-front">
+                    <span className="card-category">{word.cefr_level}</span>
+                    <h3>{word.word}</h3>
+                    <span className="card-hint">点击查看释义</span>
+                  </div>
+                  <div className="card-back">
+                    <h3>{word.chinese_meaning}</h3>
+                    {word.examples && word.examples.length > 0 && (
+                      <p className="card-example">
+                        {word.examples[0].sentence}<br/>
+                        <span>{word.examples[0].translation}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </>
+        )}
       </section>
 
       {/* Footer */}
       <footer className="footer">
-        <div className="footer-logo-center">
-          <div className="footer-logo"></div>
-        </div>
-        <div className="footer-bottom">
-          <p>© 2026 Ronnie. All rights reserved.</p>
-          <p className="cyber-credit">
-            Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
-          </p>
-        </div>
+        <p>© 2026 Ronnie. All rights reserved.</p>
       </footer>
     </div>
   )
