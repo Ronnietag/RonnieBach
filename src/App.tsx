@@ -6,6 +6,8 @@ import Resume from './Resume'
 import Blog from './Blog'
 import Chart from './Chart'
 import German from './German'
+import Ordering from './Ordering'
+import DishManagement from './DishManagement'
 import Games from './Games'
 import Admin from './Admin'
 import SnakePage from './SnakePage'
@@ -306,6 +308,17 @@ function AppContent() {
     return <German />
   }
   
+  if (location.pathname === '/ordering' || location.pathname === '/ordering/') {
+    return <Ordering />
+  }
+  
+  if (location.pathname === '/dish-management' || location.pathname === '/dish-management/') {
+    if (user?.role !== 'admin') {
+      return <div style={{ padding: '40px', textAlign: 'center' }}>需要管理员权限</div>
+    }
+    return <DishManagement />
+  }
+  
   if (location.pathname === '/games/snake' || location.pathname === '/games/snake/') {
     return <SnakePage />
   }
@@ -436,6 +449,9 @@ function AppContent() {
                 <button onClick={() => { navigate('/blog'); setShowMenu(false); }}>博客</button>
                 <button onClick={() => { navigate('/chart'); setShowMenu(false); }}>报表</button>
                 <button onClick={() => { navigate('/german'); setShowMenu(false); }}>德语</button>
+                {(user?.role === 'Frau' || user?.role === 'admin') && (
+                  <button onClick={() => { navigate('/ordering'); setShowMenu(false); }}>点菜</button>
+                )}
                 <button onClick={() => { navigate('/games'); setShowMenu(false); }}>游戏</button>
               </div>
             )}
@@ -449,7 +465,10 @@ function AppContent() {
               </button>
               <div className="user-dropdown">
                 {user.role === 'admin' && (
-                  <button onClick={() => navigate('/admin')}>管理后台</button>
+                  <>
+                    <button onClick={() => navigate('/dish-management')}>菜单管理</button>
+                    <button onClick={() => navigate('/admin')}>管理后台</button>
+                  </>
                 )}
                 <button onClick={logout}>退出登录</button>
               </div>
@@ -476,16 +495,8 @@ function AppContent() {
         } as React.CSSProperties}
       >
         <div className="stat-item">
-          <div className="stat-value">10+</div>
-          <div className="stat-label">年工作经验</div>
-        </div>
-        <div className="stat-item">
           <div className="stat-value">{stats.posts}</div>
           <div className="stat-label">篇博客</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-value">100%</div>
-          <div className="stat-label">代码质量</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">∞</div>
@@ -564,6 +575,28 @@ function AppContent() {
               <ArrowRight />
             </div>
           </div>
+
+          {/* Ordering - Only for Frau/admin */}
+          {(user?.role === 'Frau' || user?.role === 'admin') && (
+            <div 
+              className="card ordering-card"
+              onClick={() => navigate('/ordering')}
+            >
+              <div className="card-icon-wrapper">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" strokeWidth="2">
+                  <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/>
+                  <path d="M7 2v20"/>
+                  <path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                </svg>
+              </div>
+              <h3 className="card-title">点菜</h3>
+              <p className="card-desc">每日菜单选择</p>
+              <div className="card-arrow">
+                开始点菜
+                <ArrowRight />
+              </div>
+            </div>
+          )}
 
           {/* Games */}
           <div 

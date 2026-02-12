@@ -241,40 +241,208 @@
 
 .blog-detail-content {
   background: var(--color-surface-elevated);
-  border-radius: 20px;
-  padding: 48px;
+  border-radius: 16px;
+  padding: 48px 56px;
   box-shadow: var(--shadow-1);
   border: 1px solid var(--color-border);
-  /* Prevent text selection */
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 .markdown-content {
   line-height: 1.8;
   color: var(--color-text-primary);
+  font-size: 16px;
 }
 
+/* Technical Blog Styles - Code Blocks */
+.markdown-content code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9em;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--color-secondary);
+}
+
+.markdown-content pre {
+  background: #1e1e2e;
+  border-radius: 12px;
+  padding: 20px 24px;
+  overflow-x: auto;
+  margin: 24px 0;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.markdown-content pre code {
+  background: none;
+  padding: 0;
+  color: #cdd6f4;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Inline code in pre - basic syntax highlighting colors */
+.markdown-content pre code .keyword { color: #cba6f7; }
+.markdown-content pre code .string { color: #a6e3a1; }
+.markdown-content pre code .comment { color: #6c7086; font-style: italic; }
+.markdown-content pre code .function { color: #89b4fa; }
+.markdown-content pre code .number { color: #fab387; }
+.markdown-content pre code .operator { color: #89dceb; }
+
+/* Blockquotes */
+.markdown-content blockquote {
+  margin: 24px 0;
+  padding: 16px 20px;
+  background: rgba(102, 126, 234, 0.05);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 0 8px 8px 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.markdown-content blockquote p {
+  margin: 0;
+}
+
+.markdown-content blockquote::before {
+  content: '"';
+  font-size: 24px;
+  color: var(--color-primary);
+  margin-right: 8px;
+}
+
+/* Tables */
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+}
+
+.markdown-content th,
+.markdown-content td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.markdown-content th {
+  background: var(--color-surface-variant);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.markdown-content tr:hover td {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Horizontal Rule */
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 32px 0;
+}
+
+/* Links */
+.markdown-content a {
+  color: var(--color-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.markdown-content a:hover {
+  border-bottom-color: var(--color-primary);
+}
+
+/* Headings */
 .markdown-content h2 {
   font-size: 24px;
   font-weight: 600;
-  margin: 32px 0 16px;
+  margin: 40px 0 20px;
   color: var(--color-text-primary);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .markdown-content h2:first-child {
   margin-top: 0;
 }
 
+.markdown-content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 32px 0 16px;
+  color: var(--color-text-primary);
+}
+
+.markdown-content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+  color: var(--color-text-primary);
+}
+
+/* Paragraphs and Lists */
 .markdown-content p {
   margin-bottom: 16px;
 }
 
+.markdown-content ul,
+.markdown-content ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.markdown-content ul {
+  list-style: disc;
+}
+
+.markdown-content ol {
+  list-style: decimal;
+}
+
 .markdown-content li {
   margin-bottom: 8px;
-  margin-left: 20px;
+  color: var(--color-text-secondary);
+}
+
+.markdown-content li::marker {
+  color: var(--color-primary);
+}
+
+/* Strong and Em */
+.markdown-content strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+/* Images */
+.markdown-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+/* Definition Lists */
+.markdown-content dl {
+  margin: 16px 0;
+}
+
+.markdown-content dt {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.markdown-content dd {
+  margin-left: 0;
+  margin-bottom: 12px;
   color: var(--color-text-secondary);
 }
 

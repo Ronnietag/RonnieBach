@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import * as echarts from 'echarts'
 import './Chart.css'
 
 const BackIcon = () => (
@@ -21,6 +22,8 @@ function Chart() {
     visits: 0,
     avgTime: 0
   })
+  const chartRef = useRef<HTMLDivElement>(null)
+  const chartInstance = useRef<echarts.ECharts | null>(null)
 
   useEffect(() => {
     async function fetchStats() {
@@ -33,6 +36,84 @@ function Chart() {
       }
     }
     fetchStats()
+  }, [])
+
+  useEffect(() => {
+    if (chartRef.current) {
+      chartInstance.current = echarts.init(chartRef.current)
+      
+      const option = {
+        color: ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
+        },
+        legend: {
+          data: ['访问量', '文章阅读', '注册用户'],
+          top: 10,
+          textStyle: { color: '#94a3b8' }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+          axisLine: { lineStyle: { color: '#475569' } },
+          axisLabel: { color: '#94a3b8' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { show: false },
+          axisLabel: { color: '#94a3b8' },
+          splitLine: { lineStyle: { color: '#334155' } }
+        },
+        series: [
+          {
+            name: '访问量',
+            type: 'bar',
+            data: [120, 200, 150, 280, 220, 180, 140],
+            itemStyle: {
+              borderRadius: [4, 4, 0, 0]
+            }
+          },
+          {
+            name: '文章阅读',
+            type: 'bar',
+            data: [80, 150, 100, 200, 160, 120, 90],
+            itemStyle: {
+              borderRadius: [4, 4, 0, 0]
+            }
+          },
+          {
+            name: '注册用户',
+            type: 'line',
+            data: [30, 45, 38, 60, 55, 48, 42],
+            smooth: true,
+            lineStyle: { width: 3 },
+            symbol: 'circle',
+            symbolSize: 8
+          }
+        ]
+      }
+      
+      chartInstance.current.setOption(option)
+    }
+
+    return () => {
+      chartInstance.current?.dispose()
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      chartInstance.current?.resize()
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (
@@ -108,41 +189,10 @@ function Chart() {
         </div>
       </section>
 
-      {/* Chart Placeholder */}
+      {/* ECharts */}
       <section className="chart-section">
         <h2>周访问趋势</h2>
-        <div className="chart-container">
-          <div className="bar-chart">
-            <div className="bar-item">
-              <div className="bar" style={{height: '60%'}}></div>
-              <span className="bar-label">周一</span>
-            </div>
-            <div className="bar-item">
-              <div className="bar" style={{height: '80%'}}></div>
-              <span className="bar-label">周二</span>
-            </div>
-            <div className="bar-item">
-              <div className="bar" style={{height: '45%'}}></div>
-              <span className="bar-label">周三</span>
-            </div>
-            <div className="bar-item">
-              <div className="bar" style={{height: '90%'}}></div>
-              <span className="bar-label">周四</span>
-            </div>
-            <div className="bar-item">
-              <div className="bar" style={{height: '70%'}}></div>
-              <span className="bar-label">周五</span>
-            </div>
-            <div className="bar-item">
-              <div className="bar" style={{height: '55%'}}></div>
-              <span className="bar-label">周六</span>
-            </div>
-            <div className="bar-item">
-              <div className="bar" style={{height: '40%'}}></div>
-              <span className="bar-label">周日</span>
-            </div>
-          </div>
-        </div>
+        <div ref={chartRef} className="chart-container" style={{ width: '100%', height: 400 }}></div>
       </section>
 
       {/* Footer */}

@@ -1211,10 +1211,6 @@ section {
     padding: 0 16px;
   }
   
-  .auth-buttons {
-    display: none;
-  }
-  
   .modal {
     padding: 32px 24px;
     margin: 16px;

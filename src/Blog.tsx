@@ -24,7 +24,7 @@ interface BlogPost {
   content?: string
 }
 
-const categories = ['产品', '技术', '学习', '商业', '工具']
+const categories = ['产品', '技术', '学习', '医药', '工具']
 
 function Blog() {
   const navigate = useNavigate()
@@ -189,24 +189,80 @@ function Blog() {
                 {selectedPost.content ? (
                   <div className="markdown-content">
                     {selectedPost.content.split('\n').map((line, i) => {
+                      // Code block
+                      if (line.startsWith('```')) {
+                        return null
+                      } else if (line.trim() === '' && i > 0 && selectedPost.content!.split('\n')[i-1]?.startsWith('```')) {
+                        return null
+                      }
+                      // Heading 2
                       if (line.startsWith('## ')) {
                         return <h2 key={i}>{line.replace('## ', '')}</h2>
-                      } else if (line.startsWith('- **')) {
-                        const match = line.match(/- \*\*(.+?)\*\*(.*)/)
-                        if (match) {
-                          return (
-                            <li key={i}>
-                              <strong>{match[1]}</strong>{match[2]}
-                            </li>
-                          )
-                        }
-                      } else if (line.startsWith('- ')) {
+                      }
+                      // Heading 3
+                      if (line.startsWith('### ')) {
+                        return <h3 key={i}>{line.replace('### ', '')}</h3>
+                      }
+                      // Heading 4
+                      if (line.startsWith('#### ')) {
+                        return <h4 key={i}>{line.replace('#### ', '')}</h4>
+                      }
+                      // Blockquote
+                      if (line.startsWith('> ')) {
+                        return <blockquote key={i}><p>{line.replace('> ', '')}</p></blockquote>
+                      }
+                      // Unordered list item
+                      if (line.startsWith('- ')) {
                         return <li key={i}>{line.replace('- ', '')}</li>
-                      } else if (line.startsWith('1. ')) {
-                        return <li key={i}>{line.replace('1. ', '')}</li>
-                      } else if (line.trim() === '') {
+                      }
+                      // Ordered list item
+                      if (/^\d+\.\s/.test(line)) {
+                        return <li key={i}>{line.replace(/^\d+\.\s/, '')}</li>
+                      }
+                      // Table row
+                      if (line.startsWith('|') && line.includes('|')) {
+                        const cells = line.split('|').filter((c: string) => c.trim())
+                        const isHeader = cells.every((c: string) => c.trim().startsWith('-') || c.trim().startsWith(':'))
+                        if (isHeader) return null
+                        return (
+                          <tr key={i}>
+                            {cells.map((cell: string, j: number) => (
+                              <td key={j}>{cell.trim()}</td>
+                            ))}
+                          </tr>
+                        )
+                      }
+                      // Horizontal rule
+                      if (line.startsWith('---')) {
+                        return <hr key={i} />
+                      }
+                      // Inline code
+                      if (line.includes('`')) {
+                        const parts = line.split('`')
+                        return (
+                          <p key={i}>
+                            {parts.map((part: string, j: number) => (
+                              j % 2 === 1 ? <code key={j}>{part}</code> : part
+                            ))}
+                          </p>
+                        )
+                      }
+                      // Bold text
+                      if (line.includes('**')) {
+                        const parts = line.split('**')
+                        return (
+                          <p key={i}>
+                            {parts.map((part: string, j: number) => (
+                              j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                            ))}
+                          </p>
+                        )
+                      }
+                      // Empty line
+                      if (line.trim() === '') {
                         return <br key={i} />
                       }
+                      // Regular paragraph
                       return <p key={i}>{line}</p>
                     })}
                   </div>
