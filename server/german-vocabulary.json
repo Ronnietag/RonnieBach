@@ -1,0 +1,1628 @@
+{
+  "metadata": {
+    "title": "德语A1-A2词汇数据库",
+    "version": "1.0",
+    "created_date": "2026-02-11",
+    "cefr_levels": ["A1", "A2"],
+    "total_words_approx": 500,
+    "data_format": "JSON",
+    "database_type": "MongoDB/NoSQL"
+  },
+  "topics": [
+    {
+      "id": 1,
+      "name_de": "Grußwörter und alltägliche Kommunikation",
+      "name_zh": "问候与日常交际",
+      "order": 1
+    },
+    {
+      "id": 2,
+      "name_de": "Zahlen und Mengen",
+      "name_zh": "数字与数量",
+      "order": 2
+    },
+    {
+      "id": 3,
+      "name_de": "Zeitangaben",
+      "name_zh": "时间表达",
+      "order": 3
+    },
+    {
+      "id": 4,
+      "name_de": "Familie und Beziehungen",
+      "name_zh": "家庭与关系",
+      "order": 4
+    },
+    {
+      "id": 5,
+      "name_de": "Haus und Wohnung",
+      "name_zh": "房屋与家居",
+      "order": 5
+    },
+    {
+      "id": 6,
+      "name_de": "Essen und Trinken",
+      "name_zh": "食物与饮料",
+      "order": 6
+    },
+    {
+      "id": 7,
+      "name_de": "Kleidung und Einkaufen",
+      "name_zh": "服装与购物",
+      "order": 7
+    },
+    {
+      "id": 8,
+      "name_de": "Körper und Gesundheit",
+      "name_zh": "身体与健康",
+      "order": 8
+    },
+    {
+      "id": 9,
+      "name_de": "Verkehr und Reisen",
+      "name_zh": "交通与出行",
+      "order": 9
+    },
+    {
+      "id": 10,
+      "name_de": "Arbeit und Beruf",
+      "name_zh": "工作与职业",
+      "order": 10
+    },
+    {
+      "id": 11,
+      "name_de": "Bildung und Lernen",
+      "name_zh": "教育与学习",
+      "order": 11
+    },
+    {
+      "id": 12,
+      "name_de": "Länder und Sprachen",
+      "name_zh": "国家与语言",
+      "order": 12
+    },
+    {
+      "id": 13,
+      "name_de": "Adjektive und Beschreibungen",
+      "name_zh": "描述与形容词",
+      "order": 13
+    },
+    {
+      "id": 14,
+      "name_de": "Grundverben",
+      "name_zh": "动词基础",
+      "order": 14
+    }
+  ],
+  "word_types": {
+    "noun": "名词",
+    "verb": "动词",
+    "adj": "形容词",
+    "adv": "副词",
+    "pron": "代词",
+    "prep": "介词",
+    "conj": "连词",
+    "int": "感叹词",
+    "num": "数词",
+    "article": "冠词",
+    "particle": "小品词"
+  },
+  "genders": {
+    "m": "阳性 (maskulin)",
+    "f": "阴性 (feminin)",
+    "n": "中性 (neutrum)",
+    "pl": "复数 (Plural)"
+  },
+  "vocabulary": [
+    {
+      "id": 1,
+      "word": "hallo",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "你好",
+      "examples": [
+        {
+          "sentence": "Hallo, wie geht es dir?",
+          "translation": "你好，你怎么样？"
+        },
+        {
+          "sentence": "Hallo zusammen!",
+          "translation": "大家好！"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "word": "guten Morgen",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "早上好",
+      "examples": [
+        {
+          "sentence": "Guten Morgen, Frau Müller!",
+          "translation": "早上好，米勒女士！"
+        },
+        {
+          "sentence": "Guten Morgen, alle zusammen!",
+          "translation": "大家早上好！"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "word": "guten Tag",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "日安；你好",
+      "examples": [
+        {
+          "sentence": "Guten Tag! Kann ich Ihnen helfen?",
+          "translation": "日安！我能帮您吗？"
+        },
+        {
+          "sentence": "Guten Tag, ich möchte einen Termin machen.",
+          "translation": "日安，我想预约。"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 4,
+      "word": "guten Abend",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "晚上好",
+      "examples": [
+        {
+          "sentence": "Guten Abend, liebe Gäste!",
+          "translation": "晚上好，亲爱的客人们！"
+        },
+        {
+          "sentence": "Guten Abend, hast du gut geschlafen?",
+          "translation": "晚上好，你睡得好吗？"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 5,
+      "word": "gute Nacht",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "晚安",
+      "examples": [
+        {
+          "sentence": "Gute Nacht, schlaf gut!",
+          "translation": "晚安，睡个好觉！"
+        },
+        {
+          "sentence": "Gute Nacht, bis morgen!",
+          "translation": "晚安，明天见！"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 6,
+      "word": "auf Wiedersehen",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "再见（正式）",
+      "examples": [
+        {
+          "sentence": "Auf Wiedersehen, bis nächste Woche!",
+          "translation": "再见，下周见！"
+        },
+        {
+          "sentence": "Auf Wiedersehen, Frau Schmidt. Schönen Tag noch!",
+          "translation": "再见，史密特女士。祝您今天愉快！"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 7,
+      "word": "tschüss",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "再见（非正式）",
+      "examples": [
+        {
+          "sentence": "Tschüss, bis morgen!",
+          "translation": "再见，明天见！"
+        },
+        {
+          "sentence": "Tschüss, viel Spaß!",
+          "translation": "再见，玩得开心！"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 8,
+      "word": "ja",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "是的；对",
+      "examples": [
+        {
+          "sentence": "Ja, das ist richtig.",
+          "translation": "是的，这是正确的。"
+        },
+        {
+          "sentence": "Ja, ich möchte gerne.",
+          "translation": "是的，我想要。"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 9,
+      "word": "nein",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "不；不是",
+      "examples": [
+        {
+          "sentence": "Nein, danke, ich brauche nichts.",
+          "translation": "不，谢谢，我不需要什么。"
+        },
+        {
+          "sentence": "Nein, das ist nicht mein Buch.",
+          "translation": "不，这不是我的书。"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 10,
+      "word": "bitte",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "请；不客气",
+      "examples": [
+        {
+          "sentence": "Bitte schön, was darf es sein?",
+          "translation": "请问，您要什么？"
+        },
+        {
+          "sentence": "Vielen Dank! — Bitte schön!",
+          "translation": "非常感谢！— 不客气！"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 11,
+      "word": "danke",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "谢谢",
+      "examples": [
+        {
+          "sentence": "Danke für Ihre Hilfe!",
+          "translation": "感谢您的帮助！"
+        },
+        {
+          "sentence": "Danke schön! Das ist sehr nett von Ihnen.",
+          "translation": "非常感谢！您真是太好了。"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 12,
+      "word": "entschuldigung",
+      "word_type": "int",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "对不起；抱歉",
+      "examples": [
+        {
+          "sentence": "Entschuldigung, ich habe Sie nicht gesehen.",
+          "translation": "对不起，我没看到您。"
+        },
+        {
+          "sentence": "Entschuldigung, könnten Sie das wiederholen?",
+          "translation": "抱歉，您能再说一遍吗？"
+        }
+      ],
+      "topic_id": 1,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 13,
+      "word": "null",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "零",
+      "examples": [
+        {
+          "sentence": "Die Temperatur ist null Grad.",
+          "translation": "气温是零度。"
+        },
+        {
+          "sentence": "Das Spiel endete null zu null.",
+          "translation": "比赛以零比零结束。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 14,
+      "word": "eins",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "一",
+      "examples": [
+        {
+          "sentence": "Ich habe nur einen Bruder.",
+          "translation": "我只有一个哥哥/弟弟。"
+        },
+        {
+          "sentence": "Es ist fünf nach eins.",
+          "translation": "一点零五分。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 15,
+      "word": "zwei",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "二",
+      "examples": [
+        {
+          "sentence": "Ich habe zwei Katzen.",
+          "translation": "我有两只猫。"
+        },
+        {
+          "sentence": "Wir sind zu zweit.",
+          "translation": "我们是两个人。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 16,
+      "word": "drei",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "三",
+      "examples": [
+        {
+          "sentence": "Das kostet drei Euro.",
+          "translation": "这个三欧元。"
+        },
+        {
+          "sentence": "In drei Tagen fahre ich nach Berlin.",
+          "translation": "三天后我去柏林。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 17,
+      "word": "vier",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "四",
+      "examples": [
+        {
+          "sentence": "Er ist vier Jahre alt.",
+          "translation": "他四岁了。"
+        },
+        {
+          "sentence": "Die Familie hat vier Mitglieder.",
+          "translation": "这个家庭有四口人。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 18,
+      "word": "fünf",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "五",
+      "examples": [
+        {
+          "sentence": "Ich arbeite hier seit fünf Jahren.",
+          "translation": "我在这里工作五年了。"
+        },
+        {
+          "sentence": "Fünf plus fünf ist zehn.",
+          "translation": "五加五等于十。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 19,
+      "word": "sechs",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "六",
+      "examples": [
+        {
+          "sentence": "Das Konzert beginnt um sechs Uhr.",
+          "translation": "音乐会六点开始。"
+        },
+        {
+          "sentence": "Ich habe sechs Bücher gekauft.",
+          "translation": "我买了六本书。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 20,
+      "word": "sieben",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "七",
+      "examples": [
+        {
+          "sentence": "Sieben Tage hat eine Woche.",
+          "translation": "一周有七天。"
+        },
+        {
+          "sentence": "Das Hotelzimmer kostet siebzig Euro pro Nacht.",
+          "translation": "这个酒店房间每晚七十欧元。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 21,
+      "word": "acht",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "八",
+      "examples": [
+        {
+          "sentence": "Der Zug hat acht Wagen.",
+          "translation": "这列火车有八节车厢。"
+        },
+        {
+          "sentence": "Um acht Uhr stehe ich auf.",
+          "translation": "我八点起床。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 22,
+      "word": "neun",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "九",
+      "examples": [
+        {
+          "sentence": "Die Prüfung beginnt um neun Uhr.",
+          "translation": "考试九点开始。"
+        },
+        {
+          "sentence": "Er wohnt im neunten Stock.",
+          "translation": "他住在九楼。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 23,
+      "word": "zehn",
+      "word_type": "num",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "十",
+      "examples": [
+        {
+          "sentence": "Zehn Menschen sind gekommen.",
+          "translation": "来了十个人。"
+        },
+        {
+          "sentence": "Das Buch hat zehn Kapitel.",
+          "translation": "这本书有十章。"
+        }
+      ],
+      "topic_id": 2,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 24,
+      "word": "heute",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "今天",
+      "examples": [
+        {
+          "sentence": "Heute ist Montag.",
+          "translation": "今天是星期一。"
+        },
+        {
+          "sentence": "Was machst du heute?",
+          "translation": "你今天做什么？"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 25,
+      "word": "morgen",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "明天",
+      "examples": [
+        {
+          "sentence": "Morgen regnet es.",
+          "translation": "明天下雨。"
+        },
+        {
+          "sentence": "Morgen fahre ich nach Hause.",
+          "translation": "我明天回家。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 26,
+      "word": "gestern",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "昨天",
+      "examples": [
+        {
+          "sentence": "Gestern war ich im Kino.",
+          "translation": "昨天我去看电影了。"
+        },
+        {
+          "sentence": "Gestern Abend habe ich lange gearbeitet.",
+          "translation": "昨晚我工作到很晚。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 27,
+      "word": "jetzt",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "现在",
+      "examples": [
+        {
+          "sentence": "Jetzt muss ich gehen.",
+          "translation": "现在我得走了。"
+        },
+        {
+          "sentence": "Was machst du jetzt?",
+          "translation": "你现在做什么？"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 28,
+      "word": "sofort",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "立刻",
+      "examples": [
+        {
+          "sentence": "Ich komme sofort.",
+          "translation": "我马上来。"
+        },
+        {
+          "sentence": "Das ist sofort erledigt.",
+          "translation": "这马上办完。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 29,
+      "word": "bald",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "不久",
+      "examples": [
+        {
+          "sentence": "Bis bald!",
+          "translation": "再见！"
+        },
+        {
+          "sentence": "Ich komme bald zurück.",
+          "translation": "我很快就回来。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 30,
+      "word": "früh",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "早的；早",
+      "examples": [
+        {
+          "sentence": "Ich stehe früh auf.",
+          "translation": "我早起。"
+        },
+        {
+          "sentence": "Heute Morgen war ich sehr früh wach.",
+          "translation": "今天早上我很早就醒了。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 31,
+      "word": "spät",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "晚的；晚",
+      "examples": [
+        {
+          "sentence": "Es ist schon spät.",
+          "translation": "已经很晚了。"
+        },
+        {
+          "sentence": "Er kommt immer zu spät.",
+          "translation": "他总是迟到。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 32,
+      "word": "immer",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "总是",
+      "examples": [
+        {
+          "sentence": "Ich esse immer mittags zu Hause.",
+          "translation": "我总是中午在家吃饭。"
+        },
+        {
+          "sentence": "Das Wetter wird immer besser.",
+          "translation": "天气越来越好了。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 33,
+      "word": "nie",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "从不",
+      "examples": [
+        {
+          "sentence": "Ich rauche nie.",
+          "translation": "我从不吸烟。"
+        },
+        {
+          "sentence": "Das habe ich nie vergessen.",
+          "translation": "我永远不会忘记。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 34,
+      "word": "oft",
+      "word_type": "adv",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "经常",
+      "examples": [
+        {
+          "sentence": "Ich gehe oft ins Kino.",
+          "translation": "我经常去看电影。"
+        },
+        {
+          "sentence": "Er kommt oft zu spät.",
+          "translation": "他经常迟到。"
+        }
+      ],
+      "topic_id": 3,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 35,
+      "word": "die Familie",
+      "word_type": "noun",
+      "gender": "f",
+      "plural_form": "die Familien",
+      "chinese_meaning": "家庭",
+      "examples": [
+        {
+          "sentence": "Meine Familie ist sehr groß.",
+          "translation": "我的家庭很大。"
+        },
+        {
+          "sentence": "Die Familie kommt zusammen.",
+          "translation": "全家人聚在一起。"
+        }
+      ],
+      "topic_id": 4,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 36,
+      "word": "der Mann",
+      "word_type": "noun",
+      "gender": "m",
+      "plural_form": "die Männer",
+      "chinese_meaning": "男人；丈夫",
+      "examples": [
+        {
+          "sentence": "Der Mann ist mein Nachbar.",
+          "translation": "这个男人是我的邻居。"
+        },
+        {
+          "sentence": "Mein Mann heißt Thomas.",
+          "translation": "我的丈夫叫托马斯。"
+        }
+      ],
+      "topic_id": 4,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 37,
+      "word": "die Frau",
+      "word_type": "noun",
+      "gender": "f",
+      "plural_form": "die Frauen",
+      "chinese_meaning": "女人；妻子",
+      "examples": [
+        {
+          "sentence": "Die Frau arbeitet im Büro.",
+          "translation": "这个女人在办公室工作。"
+        },
+        {
+          "sentence": "Seine Frau ist Ärztin.",
+          "translation": "他的妻子是医生。"
+        }
+      ],
+      "topic_id": 4,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 38,
+      "word": "das Kind",
+      "word_type": "noun",
+      "gender": "n",
+      "plural_form": "die Kinder",
+      "chinese_meaning": "孩子",
+      "examples": [
+        {
+          "sentence": "Das Kind ist fünf Jahre alt.",
+          "translation": "这个孩子五岁了。"
+        },
+        {
+          "sentence": "Sie haben zwei Kinder.",
+          "translation": "他们有两个孩子。"
+        }
+      ],
+      "topic_id": 4,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 39,
+      "word": "der Vater",
+      "word_type": "noun",
+      "gender": "m",
+      "plural_form": "die Väter",
+      "chinese_meaning": "父亲",
+      "examples": [
+        {
+          "sentence": "Mein Vater ist Ingenieur.",
+          "translation": "我的父亲是工程师。"
+        },
+        {
+          "sentence": "Der Vater liebt seine Kinder.",
+          "translation": "父亲爱他的孩子。"
+        }
+      ],
+      "topic_id": 4,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 40,
+      "word": "die Mutter",
+      "word_type": "noun",
+      "gender": "f",
+      "plural_form": "die Mütter",
+      "chinese_meaning": "母亲",
+      "examples": [
+        {
+          "sentence": "Meine Mutter ist zu Hause.",
+          "translation": "我的母亲在家。"
+        },
+        {
+          "sentence": "Die Mutter kümmert sich um die Kinder.",
+          "translation": "母亲照顾孩子。"
+        }
+      ],
+      "topic_id": 4,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 41,
+      "word": "das Haus",
+      "word_type": "noun",
+      "gender": "n",
+      "plural_form": "die Häuser",
+      "chinese_meaning": "房子",
+      "examples": [
+        {
+          "sentence": "Das Haus ist sehr groß.",
+          "translation": "这个房子很大。"
+        },
+        {
+          "sentence": "Ich wohne in einem kleinen Haus.",
+          "translation": "我住在一个小房子里。"
+        }
+      ],
+      "topic_id": 5,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 42,
+      "word": "die Wohnung",
+      "word_type": "noun",
+      "gender": "f",
+      "plural_form": "die Wohnungen",
+      "chinese_meaning": "公寓",
+      "examples": [
+        {
+          "sentence": "Die Wohnung hat drei Zimmer.",
+          "translation": "这套公寓有三个房间。"
+        },
+        {
+          "sentence": "Ich suche eine neue Wohnung.",
+          "translation": "我在找一套新公寓。"
+        }
+      ],
+      "topic_id": 5,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 43,
+      "word": "das Zimmer",
+      "word_type": "noun",
+      "gender": "n",
+      "plural_form": "die Zimmer",
+      "chinese_meaning": "房间",
+      "examples": [
+        {
+          "sentence": "Das Zimmer ist hell und freundlich.",
+          "translation": "这个房间明亮又温馨。"
+        },
+        {
+          "sentence": "Wie viele Zimmer hat die Wohnung?",
+          "translation": "这套公寓有几个房间？"
+        }
+      ],
+      "topic_id": 5,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 44,
+      "word": "die Küche",
+      "word_type": "noun",
+      "gender": "f",
+      "plural_form": "die Küchen",
+      "chinese_meaning": "厨房",
+      "examples": [
+        {
+          "sentence": "Die Küche ist modern eingerichtet.",
+          "translation": "厨房布置得很现代。"
+        },
+        {
+          "sentence": "In der Küche wird gekocht.",
+          "translation": "在厨房里做饭。"
+        }
+      ],
+      "topic_id": 5,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 45,
+      "word": "das Brot",
+      "word_type": "noun",
+      "gender": "n",
+      "plural_form": "die Brote",
+      "chinese_meaning": "面包",
+      "examples": [
+        {
+          "sentence": "Ich esse gern Brot.",
+          "translation": "我喜欢吃面包。"
+        },
+        {
+          "sentence": "Das Brot ist frisch.",
+          "translation": "面包是新鲜的。"
+        }
+      ],
+      "topic_id": 6,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 46,
+      "word": "das Wasser",
+      "word_type": "noun",
+      "gender": "n",
+      "plural_form": "die Wasser",
+      "chinese_meaning": "水",
+      "examples": [
+        {
+          "sentence": "Ich möchte ein Glas Wasser.",
+          "translation": "我要一杯水。"
+        },
+        {
+          "sentence": "Das Wasser ist kalt.",
+          "translation": "水是冷的。"
+        }
+      ],
+      "topic_id": 6,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 47,
+      "word": "der Kaffee",
+      "word_type": "noun",
+      "gender": "m",
+      "plural_form": "die Kaffees",
+      "chinese_meaning": "咖啡",
+      "examples": [
+        {
+          "sentence": "Ich trinke morgens Kaffee.",
+          "translation": "我早上喝咖啡。"
+        },
+        {
+          "sentence": "Der Kaffee ist stark.",
+          "translation": "咖啡很浓。"
+        }
+      ],
+      "topic_id": 6,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 48,
+      "word": "der Tee",
+      "word_type": "noun",
+      "gender": "m",
+      "plural_form": "die Tees",
+      "chinese_meaning": "茶",
+      "examples": [
+        {
+          "sentence": "Ich trinke lieber Tee.",
+          "translation": "我更喜欢喝茶。"
+        },
+        {
+          "sentence": "Der Tee ist kalt.",
+          "translation": "茶是冷的。"
+        }
+      ],
+      "topic_id": 6,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 49,
+      "word": "die Milch",
+      "word_type": "noun",
+      "gender": "f",
+      "plural_form": null,
+      "chinese_meaning": "牛奶",
+      "examples": [
+        {
+          "sentence": "Die Milch ist frisch.",
+          "translation": "牛奶是新鲜的。"
+        },
+        {
+          "sentence": "Ich trinke Milch.",
+          "translation": "我喝牛奶。"
+        }
+      ],
+      "topic_id": 6,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 50,
+      "word": "das Auto",
+      "word_type": "noun",
+      "gender": "n",
+      "plural_form": "die Autos",
+      "chinese_meaning": "汽车",
+      "examples": [
+        {
+          "sentence": "Ich fahre mit dem Auto.",
+          "translation": "我开车去。"
+        },
+        {
+          "sentence": "Das Auto ist schnell.",
+          "translation": "汽车很快。"
+        }
+      ],
+      "topic_id": 9,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 51,
+      "word": "der Zug",
+      "word_type": "noun",
+      "gender": "m",
+      "plural_form": "die Züge",
+      "chinese_meaning": "火车",
+      "examples": [
+        {
+          "sentence": "Der Zug kommt um zehn Uhr.",
+          "translation": "火车十点到。"
+        },
+        {
+          "sentence": "Ich nehme den Zug nach Berlin.",
+          "translation": "我坐火车去柏林。"
+        }
+      ],
+      "topic_id": 9,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 52,
+      "word": "der Bus",
+      "word_type": "noun",
+      "gender": "m",
+      "plural_form": "die Busse",
+      "chinese_meaning": "公交车",
+      "examples": [
+        {
+          "sentence": "Der Bus ist voll.",
+          "translation": "公交车满了。"
+        },
+        {
+          "sentence": "Der Bus fährt jede zehn Minuten.",
+          "translation": "公交车每十分钟一班。"
+        }
+      ],
+      "topic_id": 9,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 53,
+      "word": "sein",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "是",
+      "examples": [
+        {
+          "sentence": "Ich bin Student.",
+          "translation": "我是学生。"
+        },
+        {
+          "sentence": "Das ist mein Buch.",
+          "translation": "这是我的书。"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 54,
+      "word": "haben",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "有",
+      "examples": [
+        {
+          "sentence": "Ich habe ein Auto.",
+          "translation": "我有一辆车。"
+        },
+        {
+          "sentence": "Er hat recht.",
+          "translation": "他是对的。"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 55,
+      "word": "werden",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "成为",
+      "examples": [
+        {
+          "sentence": "Ich will Arzt werden.",
+          "translation": "我想成为医生。"
+        },
+        {
+          "sentence": "Es wird kalt.",
+          "translation": "天变冷了。"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 56,
+      "word": "machen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "做",
+      "examples": [
+        {
+          "sentence": "Was machst du?",
+          "translation": "你在做什么？"
+        },
+        {
+          "sentence": "Ich mache die Hausaufgaben.",
+          "translation": "我做作业。"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 57,
+      "word": "sagen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "说",
+      "examples": [
+        {
+          "sentence": "Was sagen Sie?",
+          "translation": "您说什么？"
+        },
+        {
+          "sentence": "Er sagt die Wahrheit.",
+          "translation": "他说实话。"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 58,
+      "word": "sprechen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "说话",
+      "examples": [
+        {
+          "sentence": "Ich spreche Deutsch.",
+          "translation": "我说德语。"
+        },
+        {
+          "sentence": "Sprecht lauter!",
+          "translation": "说大声点！"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 59,
+      "word": "gehen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "去；走",
+      "examples": [
+        {
+          "sentence": "Ich gehe nach Hause.",
+          "translation": "我回家。"
+        },
+        {
+          "sentence": "Wie geht es dir?",
+          "translation": "你怎么样？"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 60,
+      "word": "kommen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "来",
+      "examples": [
+        {
+          "sentence": "Ich komme morgen.",
+          "translation": "我明天来。"
+        },
+        {
+          "sentence": "Komm her!",
+          "translation": "过来！"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 61,
+      "word": "können",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "能；会",
+      "examples": [
+        {
+          "sentence": "Ich kann Deutsch sprechen.",
+          "translation": "我会说德语。"
+        },
+        {
+          "sentence": "Kannst du mir helfen?",
+          "translation": "你能帮我吗？"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 62,
+      "word": "müssen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "必须",
+      "examples": [
+        {
+          "sentence": "Ich muss gehen.",
+          "translation": "我必须走了。"
+        },
+        {
+          "sentence": "Du musst die Wahrheit sagen.",
+          "translation": "你必须说实话。"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 63,
+      "word": "wollen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "想；要",
+      "examples": [
+        {
+          "sentence": "Ich will nach Hause.",
+          "translation": "我想回家。"
+        },
+        {
+          "sentence": "Was willst du werden?",
+          "translation": "你想成为什么？"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 64,
+      "word": "mögen",
+      "word_type": "verb",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "喜欢",
+      "examples": [
+        {
+          "sentence": "Ich mag dich.",
+          "translation": "我喜欢你。"
+        },
+        {
+          "sentence": "Ich möchte Kaffee.",
+          "translation": "我想要咖啡。"
+        }
+      ],
+      "topic_id": 14,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 65,
+      "word": "groß",
+      "word_type": "adj",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "大的",
+      "examples": [
+        {
+          "sentence": "Das Haus ist groß.",
+          "translation": "房子很大。"
+        },
+        {
+          "sentence": "Er ist größer als ich.",
+          "translation": "他比我高。"
+        }
+      ],
+      "topic_id": 13,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 66,
+      "word": "klein",
+      "word_type": "adj",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "小的",
+      "examples": [
+        {
+          "sentence": "Das Zimmer ist klein.",
+          "translation": "房间很小。"
+        },
+        {
+          "sentence": "Er ist klein aber stark.",
+          "translation": "他小但是壮。"
+        }
+      ],
+      "topic_id": 13,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 67,
+      "word": "gut",
+      "word_type": "adj",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "好的",
+      "examples": [
+        {
+          "sentence": "Das Essen ist gut.",
+          "translation": "食物很好。"
+        },
+        {
+          "sentence": "Er singt gut.",
+          "translation": "他唱得好。"
+        }
+      ],
+      "topic_id": 13,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 68,
+      "word": "schlecht",
+      "word_type": "adj",
+      "gender": null,
+      "plural_form": null,
+      "chinese_meaning": "坏的",
+      "examples": [
+        {
+          "sentence": "Das Wetter ist schlecht.",
+          "translation": "天气不好。"
+        },
+        {
+          "sentence": "Es geht mir schlecht.",
+          "translation": "我身体不好。"
+        }
+      ],
+      "topic_id": 13,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 69,
+      "word": "Deutschland",
+      "word_type": "noun",
+      "gender": "n",
+      "plural_form": null,
+      "chinese_meaning": "德国",
+      "examples": [
+        {
+          "sentence": "Ich komme aus Deutschland.",
+          "translation": "我来自德国。"
+        },
+        {
+          "sentence": "Deutschland liegt in Europa.",
+          "translation": "德国位于欧洲。"
+        }
+      ],
+      "topic_id": 12,
+      "cefr_level": "A1",
+      "created_at": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": 70,
+      "word": "die Schule",
+      "word_type": "noun",
+      "gender": "f",
+      "plural_form": "die Schulen",
+      "chinese_meaning": "学校",
+      "examples": [
+        {
+          "sentence": "Die Kinder gehen zur Schule.",
+          "translation": "孩子们去上学。"
+        },
+        {
+          "sentence": "Die Schule ist groß.",
+          "translation": "学校很大。"
+        }
+      ],
+      "topic_id": 11,
+      "cefr_level": "A2",
+      "created_at": "2026-02-11T00:00:00Z"
+    }
+  ],
+  "user_data_structures": {
+    "learning_progress": {
+      "user_id": "integer",
+      "vocabulary_id": "integer",
+      "mastery_level": "integer (0-3)",
+      "review_count": "integer",
+      "last_reviewed_at": "datetime",
+      "next_review_at": "datetime"
+    },
+    "wordbook": {
+      "user_id": "integer",
+      "vocabulary_id": "integer",
+      "added_at": "datetime",
+      "notes": "text"
+    },
+    "study_records": {
+      "user_id": "integer",
+      "vocabulary_id": "integer",
+      "study_type": "string (memorize/practice/quiz/review)",
+      "correct_answers": "integer",
+      "total_questions": "integer",
+      "study_duration": "integer (seconds)",
+      "studied_at": "datetime"
+    }
+  },
+  "api_endpoints": {
+    "GET": {
+      "/api/vocabulary": "获取所有词汇",
+      "/api/vocabulary/{id}": "获取单个词汇详情",
+      "/api/vocabulary?topic={topic_id}": "按主题筛选词汇",
+      "/api/vocabulary?cefr={level}": "按等级筛选词汇",
+      "/api/topics": "获取所有主题",
+      "/api/progress/{user_id}": "获取用户学习进度"
+    },
+    "POST": {
+      "/api/progress": "更新学习进度",
+      "/api/wordbook": "添加词汇到生词本",
+      "/api/study": "记录学习记录"
+    }
+  }
+}
