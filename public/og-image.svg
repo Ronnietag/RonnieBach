@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A3E"/>
+      <stop offset="50%" style="stop-color:#5C5CAA"/>
+      <stop offset="100%" style="stop-color:#E8B86D"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="0" cy="0" r="400" fill="#5C5CAA" opacity="0.3"/>
+  <circle cx="1200" cy="630" r="500" fill="#E8B86D" opacity="0.2"/>
+  
+  <!-- Main content -->
+  <text x="600" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#FFFFFF">
+    Ronnie Bach
+  </text>
+  
+  <text x="600" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" fill="#E8B86D">
+    全栈开发者
+  </text>
+  
+  <text x="600" y="400" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#FFFFFF" opacity="0.9">
+    技术博客 | React | Node.js | TypeScript
+  </text>
+  
+  <!-- Divider line -->
+  <line x1="400" y1="450" x2="800" y2="450" stroke="#FFFFFF" stroke-width="2" opacity="0.3"/>
+  
+  <text x="600" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#FFFFFF" font-weight="bold">
+    ronniebach.club
+  </text>
+</svg>
