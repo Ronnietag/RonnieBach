@@ -199,7 +199,7 @@ function DishManagement() {
       {/* Header */}
       <header className="dish-header">
         <button className="back-btn" onClick={() => window.history.back()}>
-          返回首页
+          <span className="back-arrow">&lt;</span>
         </button>
         <h1>菜单管理</h1>
       </header>

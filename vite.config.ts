@@ -1,19 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import history from 'connect-history-api-fallback'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-    {
-      name: 'history-fallback',
-      configureServer(server: any) {
-        server.middlewares.use(history())
-      }
-    }
+    react()
   ],
+  define: {
+    'import.meta.env.VITE_API_BASE': JSON.stringify('https://api.ronniebach.club')
+  },
   server: {
+    host: '0.0.0.0',
+    allowedHosts: ['ronniebach.club', 'api.ronniebach.club'],
     proxy: {
       '/api': {
         target: 'http://localhost:3001',

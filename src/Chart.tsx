@@ -1,12 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import * as echarts from 'echarts'
 import './Chart.css'
-
-const BackIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-)
+// removed API_BASE import (config/api.ts deleted)
 
 interface Stats {
   posts: number
@@ -28,7 +23,7 @@ function Chart() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch('/api/stats')
+        const res = await fetch(`/api/stats`)
         const data = await res.json()
         setStats(data)
       } catch (e) {
@@ -124,8 +119,7 @@ function Chart() {
       {/* Header */}
       <header className="chart-header">
         <button className="back-btn" onClick={() => window.history.back()}>
-          <BackIcon />
-          返回首页
+          <span className="back-arrow">&lt;</span>
         </button>
       </header>
 
@@ -201,7 +195,7 @@ function Chart() {
           <div className="footer-logo"></div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 Ronnie. All rights reserved.</p>
+          <p>© 2026 Ronnie. All rights reserved. | 辽ICP备2026003025号</p>
           <p className="cyber-credit">
             Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
           </p>

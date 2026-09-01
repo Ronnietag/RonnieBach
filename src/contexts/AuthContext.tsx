@@ -1,6 +1,7 @@
 // Auth Context for managing user sessions
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
+// removed API_BASE import (config/api.ts deleted)
 
 interface User {
   id: string
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function login(email: string, password: string) {
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(`/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function register(email: string, password: string, name: string, bio?: string) {
-    const res = await fetch('/api/auth/register', {
+    const res = await fetch(`/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, name, bio })

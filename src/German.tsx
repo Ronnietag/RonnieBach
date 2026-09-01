@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react'
 import './German.css'
-
-const BackIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-)
+// removed API_BASE import (config/api.ts deleted)
 
 interface Word {
   id: number
@@ -45,7 +40,7 @@ function German() {
 
   async function fetchTopics() {
     try {
-      const res = await fetch('/api/german/topics')
+      const res = await fetch(`/api/german/topics`)
       const data = await res.json()
       setTopics(data)
       // Topics loaded, now fetch vocabulary
@@ -59,7 +54,7 @@ function German() {
   async function fetchVocabulary(topicId?: number) {
     try {
       setLoading(true)
-      const url = topicId ? `/api/german/vocabulary?topic_id=${topicId}` : '/api/german/vocabulary'
+      const url = topicId ? `/api/german/vocabulary?topic_id=${topicId}` : `/api/german/vocabulary`
       const res = await fetch(url)
       const words: Word[] = await res.json()
       
@@ -91,7 +86,7 @@ function German() {
 
     // Track learning progress
     try {
-      await fetch('/api/german/learn', {
+      await fetch(`/api/german/learn`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: DEMO_USER_ID, word, correct: true })
@@ -106,8 +101,7 @@ function German() {
       {/* Header */}
       <header className="german-header">
         <button className="back-btn" onClick={() => window.history.back()}>
-          <BackIcon />
-          返回首页
+          <span className="back-arrow">&lt;</span>
         </button>
       </header>
 
@@ -178,7 +172,7 @@ function German() {
 
       {/* Footer */}
       <footer className="footer">
-        <p>© 2026 Ronnie. All rights reserved.</p>
+        <p>© 2026 Ronnie. All rights reserved. | 辽ICP备2026003025号</p>
       </footer>
     </div>
   )

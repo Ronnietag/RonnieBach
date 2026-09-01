@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react'
 import './Ordering.css'
 
-const BackIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-)
-
 const CheckIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M20 6L9 17l-5-5"/>
@@ -192,8 +186,7 @@ function Ordering() {
       {/* Header */}
       <header className="ordering-header">
         <button className="back-btn" onClick={() => window.history.back()}>
-          <BackIcon />
-          返回首页
+          <span className="back-arrow">&lt;</span>
         </button>
       </header>
 

@@ -119,7 +119,7 @@ export function Footer() {
         <div className="footer-logo"></div>
       </div>
       <div className="footer-bottom">
-        <p>© 2026 Ronnie. All rights reserved.</p>
+        <p>© 2026 Ronnie. All rights reserved. | 辽ICP备2026003025号</p>
         <p className="cyber-credit">
           Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
         </p>

@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from './contexts/AuthContext'
 import './Admin.css'
-
-const BackIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-)
+// removed API_BASE import (config/api.ts deleted)
 
 const TrashIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -81,10 +76,10 @@ function Admin() {
       
       // Fetch all data
       const [usersRes, postsRes, statsRes, visitsRes] = await Promise.all([
-        fetch('/api/admin/users', token ? { headers: { Authorization: `token-${token}` } } : {}),
-        fetch('/api/posts'),
-        fetch('/api/stats'),
-        fetch('/api/admin/visits', token ? { headers: { Authorization: `token-${token}` } } : {})
+        fetch(`/api/admin/users`, token ? { headers: { Authorization: `token-${token}` } } : {}),
+        fetch(`/api/posts`),
+        fetch(`/api/stats`),
+        fetch(`/api/admin/visits`, token ? { headers: { Authorization: `token-${token}` } } : {})
       ])
       
       if (usersRes.status === 403) {
@@ -178,8 +173,7 @@ function Admin() {
       {/* Header */}
       <header className="admin-header">
         <button className="back-btn" onClick={() => window.history.back()}>
-          <BackIcon />
-          返回首页
+          <span className="back-arrow">&lt;</span>
         </button>
         <h1>管理后台</h1>
       </header>
@@ -349,7 +343,7 @@ function Admin() {
           <div className="footer-logo"></div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 Ronnie. All rights reserved.</p>
+          <p>© 2026 Ronnie. All rights reserved. | 辽ICP备2026003025号</p>
           <p className="cyber-credit">
             Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
           </p>

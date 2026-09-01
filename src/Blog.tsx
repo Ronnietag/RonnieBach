@@ -2,12 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import './Blog.css'
-
-const BackIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-)
+// removed API_BASE import (config/api.ts deleted)
 
 const PlusIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -41,6 +36,12 @@ function Blog() {
   const [editorContent, setEditorContent] = useState('')
   const [editorLoading, setEditorLoading] = useState(false)
   const [editorError, setEditorError] = useState('')
+  const [comments, setComments] = useState<any[]>([])
+  const [commentAuthor, setCommentAuthor] = useState('')
+  const [commentContent, setCommentContent] = useState('')
+  const [commentLoading, setCommentLoading] = useState(false)
+  const [commentError, setCommentError] = useState('')
+  const [showComments, setShowComments] = useState(false)
 
   useEffect(() => {
     fetchPosts()
@@ -48,7 +49,7 @@ function Blog() {
 
   async function fetchPosts() {
     try {
-      const res = await fetch('/api/posts')
+      const res = await fetch(`/api/posts`)
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setPosts(data)
@@ -80,6 +81,78 @@ function Blog() {
 
   function handleBack() {
     setSelectedPost(null)
+    setComments([])
+    setShowComments(false)
+  }
+
+  async function fetchComments(postId: string) {
+    try {
+      const res = await fetch(`/api/comments/${postId}`)
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setComments(data)
+    } catch (e: any) {
+      console.error('Failed to fetch comments:', e.message)
+    }
+  }
+
+  async function handleSubmitComment() {
+    if (!commentContent.trim()) {
+      setCommentError('评论内容不能为空')
+      return
+    }
+
+    setCommentLoading(true)
+    setCommentError('')
+
+    try {
+      const res = await fetch(`/api/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postId: selectedPost?._id,
+          author: commentAuthor.trim() || '匿名用户',
+          content: commentContent,
+        }),
+      })
+
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+
+      setComments([data, ...comments])
+      setCommentContent('')
+    } catch (e: any) {
+      setCommentError(e.message || '评论失败，请稍后重试')
+    } finally {
+      setCommentLoading(false)
+    }
+  }
+
+  function toggleComments() {
+    if (!showComments && selectedPost) {
+      fetchComments(selectedPost._id)
+    }
+    setShowComments(!showComments)
+  }
+
+  async function handleDeleteComment(commentId: string) {
+    if (!confirm('确定要删除这条评论吗？')) return
+    
+    try {
+      const res = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE',
+      })
+      const data = await res.json()
+      if (data.error) {
+        alert(data.error)
+        return
+      }
+      // Remove from local state
+      setComments(comments.filter((c: any) => c._id !== commentId))
+    } catch (e: any) {
+      console.error('Delete error:', e)
+      alert('删除失败: ' + e.message)
+    }
   }
 
   async function handleSubmitPost() {
@@ -104,7 +177,7 @@ function Blog() {
 
       const token = localStorage.getItem('ronnie_token') || `token-${user.id}`
 
-      const res = await fetch('/api/posts', {
+      const res = await fetch(`/api/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,8 +238,7 @@ function Blog() {
         
         <header className="blog-header">
           <button className="back-btn" onClick={handleBack}>
-            <BackIcon />
-            返回列表
+            <span className="back-arrow">&lt;</span>
           </button>
         </header>
 
@@ -274,8 +346,70 @@ function Blog() {
           )}
         </article>
 
+        {/* Comments Section */}
+        <section className="comments-section">
+          <button className="comments-toggle" onClick={toggleComments}>
+            💬 评论 ({comments.length})
+          </button>
+
+          {showComments && (
+            <>
+              <div className="comment-form">
+                <input
+                  type="text"
+                  placeholder="你的昵称（可选）"
+                  value={commentAuthor}
+                  onChange={e => setCommentAuthor(e.target.value)}
+                  className="comment-author"
+                />
+                <textarea
+                  placeholder="写下你的评论..."
+                  value={commentContent}
+                  onChange={e => setCommentContent(e.target.value)}
+                  rows={3}
+                  className="comment-content"
+                />
+                {commentError && <div className="comment-error">{commentError}</div>}
+                <button 
+                  className="comment-submit"
+                  onClick={handleSubmitComment}
+                  disabled={commentLoading}
+                >
+                  {commentLoading ? '提交中...' : '提交评论'}
+                </button>
+              </div>
+
+              <div className="comments-list">
+                {comments.length === 0 ? (
+                  <p className="no-comments">暂无评论，快来抢沙发吧！</p>
+                ) : (
+                  comments.map((comment: any) => (
+                    <div key={comment._id} className="comment">
+                      <div className="comment-header">
+                        <span className="comment-author">{comment.author}</span>
+                        <span className="comment-date">
+                          {new Date(comment.createdAt).toLocaleDateString('zh-CN')}
+                        </span>
+                        {isAdmin && (
+                          <button 
+                            className="comment-delete"
+                            onClick={() => handleDeleteComment(comment._id)}
+                          >
+                            删除
+                          </button>
+                        )}
+                      </div>
+                      <p className="comment-text">{comment.content}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </>
+          )}
+        </section>
+
         <footer className="blog-footer">
-          <p>© 2026 Ronnie. All rights reserved.</p>
+          <p>© 2026 Ronnie. All rights reserved. | 辽ICP备2026003025号</p>
         </footer>
       </div>
     )
@@ -289,8 +423,7 @@ function Blog() {
         
         <header className="blog-header">
           <button className="back-btn" onClick={() => setShowEditor(false)}>
-            <BackIcon />
-            返回列表
+            <span className="back-arrow">&lt;</span>
           </button>
           <h2>撰写文章</h2>
         </header>
@@ -362,8 +495,7 @@ function Blog() {
       {/* Header */}
       <header className="blog-header">
         <button className="back-btn" onClick={() => navigate('/')}>
-          <BackIcon />
-          返回首页
+          <span className="back-arrow">&lt;</span>
         </button>
         {isAdmin && (
           <button className="write-btn" onClick={() => setShowEditor(true)}>
@@ -429,7 +561,7 @@ function Blog() {
           <div className="footer-logo"></div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 Ronnie. All rights reserved.</p>
+          <p>© 2026 Ronnie. All rights reserved. | 辽ICP备2026003025号</p>
           <p className="cyber-credit">
             Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
           </p>

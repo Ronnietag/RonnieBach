@@ -6,12 +6,14 @@ import Resume from './Resume'
 import Blog from './Blog'
 import Chart from './Chart'
 import German from './German'
+
 import Ordering from './Ordering'
 import DishManagement from './DishManagement'
-import Games from './Games'
 import Admin from './Admin'
-import SnakePage from './SnakePage'
-import BreakoutPage from './BreakoutPage'
+// Games module removed (B: complete delete)
+// import Games from './Games'
+// import SnakePage from './SnakePage'
+// import BreakoutPage from './BreakoutPage'
 
 // Icons
 const ArrowRight = () => (
@@ -54,18 +56,7 @@ const ChartIcon = () => (
   </svg>
 )
 
-const GameIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24">
-    <polygon points="4,4 20,12 4,20" fill="url(#gameGradient)" stroke="none"/>
-    <defs>
-      <linearGradient id="gameGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#22D3EE"/>
-        <stop offset="100%" stopColor="#8B5CF6"/>
-      </linearGradient>
-    </defs>
-    <circle cx="9" cy="12" r="1.5" fill="white" opacity="0.9"/>
-  </svg>
-)
+
 
 const GermanIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
@@ -75,6 +66,8 @@ const GermanIcon = () => (
     <rect x="2" y="14" width="20" height="6" fill="#FFCC00"/>
   </svg>
 )
+
+
 
 const EyeIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -99,7 +92,7 @@ const MenuIcon = () => (
 )
 
 // Auth Modal Component
-function AuthModal({ isOpen, onClose, mode, onSwitchMode }: { 
+function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
   isOpen: boolean
   onClose: () => void
   mode: 'login' | 'register'
@@ -128,7 +121,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
       onClose()
       setFormData({ email: '', password: '', name: '', bio: '', confirmPassword: '' })
     } catch (err: any) {
-      setError(err.message || '操作失败，请稍后重试')
+      setError(err.message || '操作失败,请稍后重试')
     } finally {
       setLoading(false)
     }
@@ -142,7 +135,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
         <button className="modal-close" onClick={onClose}>
           <CloseIcon />
         </button>
-        
+
         <div className="modal-header">
           <h2>{mode === 'login' ? '欢迎回来' : '创建账户'}</h2>
           <p>{mode === 'login' ? '登录你的账户' : '开始你的旅程'}</p>
@@ -163,7 +156,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
               />
             </div>
           )}
-          
+
           <div className="form-group">
             <label>邮箱</label>
             <input
@@ -174,7 +167,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
               required
             />
           </div>
-          
+
           <div className="form-group">
             <label>密码</label>
             <div className="password-input">
@@ -190,7 +183,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
               </button>
             </div>
           </div>
-          
+
           {mode === 'register' && (
             <div className="form-group">
               <label>确认密码</label>
@@ -205,7 +198,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
               </div>
             </div>
           )}
-          
+
           {mode === 'register' && (
             <div className="form-group">
               <label>介绍一下自己 <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>(选填)</span></label>
@@ -226,7 +219,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
               />
             </div>
           )}
-          
+
           {mode === 'login' && (
             <div className="form-options">
               <label className="remember-me">
@@ -235,7 +228,7 @@ function AuthModal({ isOpen, onClose, mode, onSwitchMode }: {
               </label>
             </div>
           )}
-          
+
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading ? '请稍后...' : (mode === 'login' ? '登录' : '注册')}
           </button>
@@ -271,7 +264,7 @@ function AppContent() {
       const scrollY = window.scrollY
       const windowHeight = window.innerHeight
       const scrollThreshold = windowHeight * 0.6
-      
+
       const progress = Math.min(scrollY / scrollThreshold, 1)
       setScrollProgress(progress)
       setIsExpanded(scrollY < 100)
@@ -281,59 +274,59 @@ function AppContent() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const navigate = useNavigate()
+  const location = useLocation()
+
   // Fetch stats
   useEffect(() => {
-    fetch('/api/stats')
+    fetch(`/api/stats`)
       .then(res => res.json())
       .then(data => setStats(data))
       .catch(() => {})
   }, [])
 
-  const navigate = useNavigate()
-  const location = useLocation()
+  // Track page visit
+  useEffect(() => {
+    fetch(`/api/track`, { method: 'POST', keepalive: true, body: JSON.stringify({ path: location.pathname }), headers: { 'Content-Type': 'application/json' } }).catch(() => {})
+  }, [location.pathname])
 
   if (location.pathname === '/resume' || location.pathname === '/resume/') {
     return <Resume />
   }
-  
+
   if (location.pathname === '/blog' || location.pathname === '/blog/') {
     return <Blog />
   }
-  
+
   if (location.pathname === '/chart' || location.pathname === '/chart/') {
     return <Chart />
   }
-  
+
   if (location.pathname === '/german' || location.pathname === '/german/') {
     return <German />
   }
-  
+
   if (location.pathname === '/ordering' || location.pathname === '/ordering/') {
     return <Ordering />
   }
-  
+
   if (location.pathname === '/dish-management' || location.pathname === '/dish-management/') {
     if (user?.role !== 'admin') {
       return <div style={{ padding: '40px', textAlign: 'center' }}>需要管理员权限</div>
     }
     return <DishManagement />
   }
-  
-  if (location.pathname === '/games/snake' || location.pathname === '/games/snake/') {
-    return <SnakePage />
-  }
-  
-  if (location.pathname === '/games/breakout' || location.pathname === '/games/breakout/') {
-    return <BreakoutPage />
-  }
-  
-  if (location.pathname === '/games' || location.pathname === '/games.html' || location.pathname === '/games/') {
-    return <Games />
-  }
-  
+
+  // Games routes removed
+
   if (location.pathname === '/admin' || location.pathname === '/admin/') {
     return <Admin />
   }
+
+  // Hermes route hidden on frontend — backend API still available at /api/hermes/*
+  // if (location.pathname === '/hermes' || location.pathname === '/hermes/') {
+  //   return <div style={{ padding: '40px', textAlign: 'center' }}>此功能已下线</div>
+  // }
 
   return (
     <div className="app">
@@ -341,14 +334,14 @@ function AppContent() {
       <div className="progress-bar" style={{ transform: `scaleX(${scrollProgress})` }} />
 
       {/* Hero Section - Collapsible */}
-      <section 
+      <section
         ref={heroRef}
         className={`hero ${isExpanded ? 'expanded' : 'collapsed'}`}
         style={{
           '--progress': scrollProgress,
         } as React.CSSProperties}
       >
-        <div 
+        <div
           className="hero-content"
           style={{
             opacity: 1 - scrollProgress * 1.5,
@@ -359,7 +352,7 @@ function AppContent() {
             <span className="dot"></span>
             <span>AI 开发者 & 使用者</span>
           </div>
-          <h1 
+          <h1
             className="hero-title"
             style={{
               transform: `scale(${1 - scrollProgress * 0.4})`,
@@ -384,7 +377,7 @@ function AppContent() {
             <button className="chip">医药数字化</button>
           </div>
         </div>
-        <div 
+        <div
           className="hero-visual"
           style={{
             opacity: 1 - scrollProgress * 1.2,
@@ -393,7 +386,7 @@ function AppContent() {
         >
           <div className="avatar"></div>
         </div>
-        <div 
+        <div
           className="scroll-indicator"
           style={{
             opacity: Math.max(0, 1 - scrollProgress * 4),
@@ -417,7 +410,7 @@ function AppContent() {
       </section>
 
       {/* Collapsed Header (shows when scrolled) */}
-      <header 
+      <header
         className={`collapsed-header ${isExpanded ? 'hidden' : 'visible'}`}
         style={{
           opacity: scrollProgress,
@@ -426,37 +419,38 @@ function AppContent() {
       >
         {/* Left - Ronnie Text */}
         <span className="header-logo-text">Ronnie</span>
-        
+
         {/* Center - Logo Image */}
         <div className="header-center">
           <div className="header-logo"></div>
         </div>
-        
+
         {/* Right - Menu + Auth */}
         <div className="header-right">
           {/* Menu Button */}
           <div className="menu-container">
-            <button 
+            <button
               className="menu-btn"
               onClick={() => setShowMenu(!showMenu)}
             >
               {showMenu ? <CloseIcon /> : <MenuIcon />}
             </button>
-            
+
             {showMenu && (
               <div className="menu-dropdown">
                 <button onClick={() => { navigate('/resume/'); setShowMenu(false); }}>介绍</button>
                 <button onClick={() => { navigate('/blog'); setShowMenu(false); }}>博客</button>
                 <button onClick={() => { navigate('/chart'); setShowMenu(false); }}>报表</button>
                 <button onClick={() => { navigate('/german'); setShowMenu(false); }}>德语</button>
+                
                 {(user?.role === 'Frau' || user?.role === 'admin') && (
                   <button onClick={() => { navigate('/ordering'); setShowMenu(false); }}>点菜</button>
                 )}
-                <button onClick={() => { navigate('/games'); setShowMenu(false); }}>游戏</button>
+
               </div>
             )}
           </div>
-          
+
           {/* Auth */}
           {user ? (
             <div className="user-menu">
@@ -487,7 +481,7 @@ function AppContent() {
       </header>
 
       {/* Stats Bar */}
-      <div 
+      <div
         className="stats-bar"
         style={{
           opacity: 1 - scrollProgress * 0.5,
@@ -509,12 +503,12 @@ function AppContent() {
         <div className="section-header">
           <span className="section-label">Discover</span>
           <h2 className="section-title">探索更多</h2>
-          <p className="section-subtitle">发现更多精彩内容，开启你的探索之旅</p>
+          <p className="section-subtitle">发现更多精彩内容,开启你的探索之旅</p>
         </div>
 
         <div className="bento">
           {/* Resume - Large Card */}
-          <div 
+          <div
             className="card card-large"
             onClick={() => navigate('/resume/')}
           >
@@ -529,7 +523,7 @@ function AppContent() {
           </div>
 
           {/* Blog */}
-          <div 
+          <div
             className="card"
             onClick={() => navigate('/blog')}
           >
@@ -545,7 +539,7 @@ function AppContent() {
           </div>
 
           {/* Chart */}
-          <div 
+          <div
             className="card"
             onClick={() => navigate('/chart')}
           >
@@ -561,7 +555,7 @@ function AppContent() {
           </div>
 
           {/* German */}
-          <div 
+          <div
             className="card"
             onClick={() => navigate('/german')}
           >
@@ -576,9 +570,11 @@ function AppContent() {
             </div>
           </div>
 
+          {/* Hermes Chat card removed */}
+
           {/* Ordering - Only for Frau/admin */}
           {(user?.role === 'Frau' || user?.role === 'admin') && (
-            <div 
+            <div
               className="card ordering-card"
               onClick={() => navigate('/ordering')}
             >
@@ -598,21 +594,7 @@ function AppContent() {
             </div>
           )}
 
-          {/* Games */}
-          <div 
-            className="card"
-            onClick={() => navigate('/games')}
-          >
-            <div className="card-icon-wrapper">
-              <GameIcon />
-            </div>
-            <h3 className="card-title">小游戏</h3>
-            <p className="card-desc">放松时刻</p>
-            <div className="card-arrow">
-              开始游戏
-              <ArrowRight />
-            </div>
-          </div>
+          {/* Games card removed */}
         </div>
       </section>
 
@@ -622,15 +604,15 @@ function AppContent() {
           <div className="footer-logo"></div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 Ronnie. All rights reserved.</p>
+          <p>© 2026 Ronnie. All rights reserved. | 辽ICP备2026003025号</p>
           <p className="cyber-credit">
-            Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">OpenClaw</span> & <span className="credit-model">MiniMax 2.1</span>
+            Created by <span className="credit-name">Ronnie</span> | Built with <span className="credit-tech">React</span> & <span className="credit-model">MiniMax 2.1</span>
           </p>
         </div>
       </footer>
 
       {/* Auth Modal */}
-      <AuthModal 
+      <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         mode={authMode}

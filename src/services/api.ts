@@ -1,9 +1,9 @@
 // API Service for Ronnie Portfolio
-// Uses relative paths - works both dev and production
-const API_BASE = '/api'
+
+const API_PATH = '/api'
 
 async function request(endpoint: string, options: RequestInit = {}) {
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const response = await fetch(`${API_PATH}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
