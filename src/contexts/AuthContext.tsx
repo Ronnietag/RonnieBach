@@ -1,7 +1,18 @@
 // Auth Context for managing user sessions
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
-// removed API_BASE import (config/api.ts deleted)
+
+const TOKEN_KEY = 'ronnie_token'
+const USER_KEY = 'ronnie_user'
+
+export function getAuthToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY)
+}
+
+export function authHeaders(): HeadersInit {
+  const token = getAuthToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 interface User {
   id: string
@@ -26,13 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('ronnie_user')
+    const savedUser = localStorage.getItem(USER_KEY)
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser))
       } catch (e) {
-        localStorage.removeItem('ronnie_user')
+        localStorage.removeItem(USER_KEY)
+        localStorage.removeItem(TOKEN_KEY)
       }
     }
     setLoading(false)
@@ -46,9 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     const data = await res.json()
     if (data.error) throw new Error(data.error)
-    
+
+    if (!data.token) throw new Error('登录响应缺少 token')
+
     setUser(data.user)
-    localStorage.setItem('ronnie_user', JSON.stringify(data.user))
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user))
+    localStorage.setItem(TOKEN_KEY, data.token)
   }
 
   async function register(email: string, password: string, name: string, bio?: string) {
@@ -59,14 +73,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     const data = await res.json()
     if (data.error) throw new Error(data.error)
-    
+
+    if (!data.token) throw new Error('注册响应缺少 token')
+
     setUser(data.user)
-    localStorage.setItem('ronnie_user', JSON.stringify(data.user))
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user))
+    localStorage.setItem(TOKEN_KEY, data.token)
   }
 
   function logout() {
     setUser(null)
-    localStorage.removeItem('ronnie_user')
+    localStorage.removeItem(USER_KEY)
+    localStorage.removeItem(TOKEN_KEY)
   }
 
   return (

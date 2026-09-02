@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from './contexts/AuthContext'
+import { useAuth, authHeaders } from './contexts/AuthContext'
 import './Admin.css'
 // removed API_BASE import (config/api.ts deleted)
 
@@ -70,16 +70,12 @@ function Admin() {
   async function fetchData() {
     setLoading(true)
     try {
-      // Get token from localStorage
-      const savedUser = localStorage.getItem('ronnie_user')
-      const token = savedUser ? JSON.parse(savedUser).id : null
-      
       // Fetch all data
       const [usersRes, postsRes, statsRes, visitsRes] = await Promise.all([
-        fetch(`/api/admin/users`, token ? { headers: { Authorization: `token-${token}` } } : {}),
+        fetch(`/api/admin/users`, { headers: authHeaders() }),
         fetch(`/api/posts`),
         fetch(`/api/stats`),
-        fetch(`/api/admin/visits`, token ? { headers: { Authorization: `token-${token}` } } : {})
+        fetch(`/api/admin/visits`, { headers: authHeaders() })
       ])
       
       if (usersRes.status === 403) {
@@ -112,14 +108,11 @@ function Admin() {
 
   async function deleteUser(id: string) {
     if (!confirm('确定要删除这个用户吗？')) return
-    
-    const savedUser = localStorage.getItem('ronnie_user')
-    const token = savedUser ? JSON.parse(savedUser).id : null
-    
+
     try {
-      const res = await fetch(`/api/admin/users/${id}`, { 
+      const res = await fetch(`/api/admin/users/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `token-${token}` }
+        headers: authHeaders()
       })
       const data = await res.json()
       if (data.error) throw new Error(data.error)

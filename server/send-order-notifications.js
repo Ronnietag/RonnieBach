@@ -6,7 +6,7 @@
 
 import { MongoClient } from 'mongodb'
 
-const MONGO_URL = process.env.MONGO_URL || 'mongodb://REDACTED-MONGO-USER:REDACTED-MONGO-PASS@127.0.0.1:27017/?authSource=admin'
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017'
 
 const RONNIE_PHONE = '+8619512244066'
 

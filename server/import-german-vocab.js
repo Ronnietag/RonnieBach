@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId } from 'mongodb'
 import fs from 'fs'
 
-const MONGO_URL = process.env.MONGO_URL || 'mongodb://REDACTED-MONGO-USER:REDACTED-MONGO-PASS@127.0.0.1:27017/?authSource=admin'
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017'
 const DB_NAME = 'ronnie_portfolio'
 
 async function importGermanVocabulary() {

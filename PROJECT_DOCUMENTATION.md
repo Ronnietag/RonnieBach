@@ -68,6 +68,8 @@ Ronnie Portfolio 是一个个人全栈 Web 应用项目，包含以下功能：
 | MongoDB | 7.x | 数据库 |
 | nodemailer | 8.x | SMTP 邮件发送 |
 | dotenv | 17.x | 环境变量加载 |
+| jose | 5.x | JWT 签发与验证 |
+| bcryptjs | 2.4 | 密码哈希 |
 | PM2 | 6.x | 进程管理（生产） |
 | Nginx | 1.24+ | 反向代理（生产） |
 
@@ -601,40 +603,35 @@ launchctl kickstart -k gui/$(id -u)/com.ronniebach.api    # 让 api 重新加载
 
 > 本节列出已知但尚未修复的安全问题，作为记录与未来改造的指引。
 
-### 9.1 密码明文存储
+### 9.1 密码明文存储（已修复）
 
-**位置:** `server/index.js:702`（登录验证）、`server/index.js:675`（注册写入）
+**历史:** 老版本 `server/index.js` 注册时直接存明文、登录时明文比对。
 
-```js
-// 登录直接明文比对
-const user = await collection.findOne({ email, password })
-```
+**修复（2026-09-02）:** 引入 `bcryptjs`，注册时 `bcrypt.hash(password, 10)`，登录时 `bcrypt.compare()`。同时实现**渐进迁移**：明文密码用户登录成功后自动重新哈希为 bcrypt 并添加 `passwordMigratedAt` 时间戳。
 
-**影响:** 数据库泄露即所有用户密码暴露。
+**当前状态:** 所有用户密码均已为 bcrypt hash（已通过测试）。数据库已无明文密码。
 
-**临时缓解:** MongoDB 仅监听 127.0.0.1，依赖网络隔离（无密码）。
+### 9.2 弱 token 机制（已修复）
 
-**改造路径（未执行）:**
-1. 引入 `bcrypt` 库
-3. 注册时 `bcrypt.hash(password, 10)`
-4. 登录时 `bcrypt.compare(password, user.password)`
-5. **必须配套:** 老用户密码重置流程（4 个现有用户）
+**历史:** `/api/auth/login` 返回 `token-${userId}` 字符串，任何持有 userId 字符串的人都能模拟该用户。
 
-### 9.2 弱 token 机制
+**修复（2026-09-02）:** 引入 `jose` 库，实现 HS256 签名 token（不设过期时间，符合当前设计选择）。前端改用 `Authorization: Bearer <token>` header。
 
-`/api/auth/login` 返回 `token-${userId}` 字符串，作为 Authorization header。任何持有 userId 字符串的人都能模拟该用户。
+**当前状态:** 所有鉴权端点使用 JWT，包含 `id, email, role, iat, iss` claims。Token 验证通过 `jose.jwtVerify()` + issuer 校验。
 
-**临时缓解:** 仍是占位字符串，不做权限强制（仅 admin 路由依赖此 token）。
+**未来改进:** 当前不设过期时间（exp claim）。如未来需要过期，在 `SignJWT` 后加 `.setExpirationTime('24h')`，并让前端处理 401 跳转登录。
 
-**改造路径:** 引入 JWT，添加过期时间和签名。
+### 9.3 SMTP 凭据曾在 git 历史中明文（已修复）
 
-### 9.3 SMTP 凭据曾在 git 历史中明文
+SMTP 授权码曾在 `server/index.js` 中硬编码并提交。
 
-SMTP 授权码曾在 `server/index.js` 中硬编码并提交。即使现在已迁到 `.env`，历史中仍存在。需 `git filter-branch` 或 BFG 重写历史，并在 QQ 邮箱轮换旧授权码。
+**修复（2026-09-02）:** 用 BFG Repo-Cleaner 重写整个 git 历史，9 个 commit 全部更新 hash，敏感字符串替换为 `REDACTED-*` 占位。GitHub 远程尚未 force-push（需要本地执行 `git push --force-with-lease origin main`）。
 
-> ⚠️ 实际泄露的凭据需要在 QQ 邮箱设置 → 账户 → 关闭旧授权码、生成新授权码。本节不展示具体值。
+**剩余动作:**
+- ⚠️ **你必须执行 force-push**（我没 GitHub 凭据）
+- ⚠️ 在 QQ 邮箱设置 → 账户 → 关闭旧授权码、生成新授权码（本地 .env 已支持）
 
-**当前缓解:** 阶段 2 已迁到 `.env`，并提示用户在 QQ 邮箱轮换授权码。
+> ⚠️ GitHub 的 web 缓存可能仍含旧内容（GitHub 主动清除需要提交 Security Advisories）。
 
 ### 9.4 cloudflared ingress 配置未在仓库中跟踪
 

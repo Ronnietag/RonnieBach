@@ -4,6 +4,8 @@ import express from 'express'
 import cors from 'cors'
 import { MongoClient, ObjectId } from 'mongodb'
 import nodemailer from 'nodemailer'
+import * as jose from 'jose'
+import bcrypt from 'bcryptjs'
 import { fileURLToPath } from 'url'
 import { dirname, join, resolve } from 'path'
 import fs from 'fs'
@@ -39,6 +41,18 @@ const emailTransporter = nodemailer.createTransport({
     pass: SMTP_PASS
   }
 })
+
+// JWT 配置（从 .env 读取；缺失时使用占位 fallback 并打印警告）
+// ⚠️ 当前设计：不设置过期时间（exp）。如未来需过期，在 SignJWT 后加 .setExpirationTime('24h')
+//     同时前端需处理 401 跳转登录。
+const JWT_SECRET = process.env.JWT_SECRET || '__REPLACE_WITH_JWT_SECRET_RANDOM_64_CHARS__'
+const JWT_ISSUER = process.env.JWT_ISSUER || 'ronnie-portfolio'
+if (process.env.JWT_SECRET) {
+  console.log('✅ JWT_SECRET 已配置')
+} else {
+  console.warn('⚠️  JWT_SECRET 未在 .env 配置，使用内置占位。生产前必须设置随机强密钥。')
+}
+const jwtSecretKey = new TextEncoder().encode(JWT_SECRET)
 
 let db
 
@@ -713,12 +727,14 @@ app.get('/api/health', async (req, res) => {
   let dbStatus = 'disconnected'
   try {
     if (db) {
-      await db.adminCommand('ping')
+      await db.command({ ping: 1 })
       dbStatus = 'connected'
     }
-  } catch (e) {}
-  res.json({ 
-    status: 'ok', 
+  } catch (e) {
+    console.error('Health check ping failed:', e.message)
+  }
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     database: dbStatus
   })
@@ -728,20 +744,25 @@ app.get('/api/health', async (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
   const { email, password, name, bio, role } = req.body
   const collection = getCollection('users')
-  
+
   if (!collection) {
     return res.status(503).json({ error: '数据库未连接' })
   }
-  
+
+  if (!password || password.length < 6) {
+    return res.status(400).json({ error: '密码至少 6 位' })
+  }
+
   try {
     const existing = await collection.findOne({ email })
     if (existing) {
       return res.status(400).json({ error: '邮箱已注册' })
     }
-    
+
+    const hashedPassword = await bcrypt.hash(password, 10)
     const user = {
       email,
-      password,
+      password: hashedPassword,
       name,
       bio: bio || '',
       role: role || 'user',
@@ -750,8 +771,13 @@ app.post('/api/auth/register', async (req, res) => {
     const result = await collection.insertOne(user)
     const { password: _, ...userWithoutPassword } = user
     userWithoutPassword.id = result.insertedId.toString()
-    
-    res.json({ user: userWithoutPassword, token: `token-${result.insertedId}` })
+
+    const token = await new jose.SignJWT({ id: result.insertedId.toString(), email, role: userWithoutPassword.role })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer(JWT_ISSUER)
+      .sign(jwtSecretKey)
+    res.json({ user: userWithoutPassword, token })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -760,48 +786,101 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body
   const collection = getCollection('users')
-  
+
   if (!collection) {
     return res.status(503).json({ error: '数据库未连接' })
   }
-  
+
   try {
-    const user = await collection.findOne({ email, password })
+    const user = await collection.findOne({ email })
     if (!user) {
       return res.status(401).json({ error: '邮箱或密码错误' })
     }
-    
+
+    // 密码验证：兼容 bcrypt 哈希 + 历史明文（明文命中后自动升级为 bcrypt）
+    let passwordValid = false
+    let needMigration = false
+
+    if (typeof user.password === 'string' && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$'))) {
+      passwordValid = await bcrypt.compare(password, user.password)
+    } else {
+      // Legacy plaintext
+      passwordValid = user.password === password
+      if (passwordValid) {
+        needMigration = true
+      }
+    }
+
+    if (!passwordValid) {
+      return res.status(401).json({ error: '邮箱或密码错误' })
+    }
+
+    if (needMigration) {
+      try {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        await collection.updateOne({ _id: user._id }, { $set: { password: hashedPassword, passwordMigratedAt: new Date() } })
+        console.log(`✅ User ${user.email} 密码已升级为 bcrypt`)
+      } catch (migrationError) {
+        console.error('⚠️  密码迁移失败 (登录仍成功):', migrationError.message)
+      }
+    }
+
     const { password: _, ...userWithoutPassword } = user
     userWithoutPassword.id = user._id.toString()
     
-    res.json({ user: userWithoutPassword, token: `token-${user._id}` })
+    const token = await new jose.SignJWT({ id: user._id.toString(), email, role: user.role })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer(JWT_ISSUER)
+      .sign(jwtSecretKey)
+    res.json({ user: userWithoutPassword, token })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 })
 
-// Admin middleware
+// Admin middleware - JWT 验证
 async function requireAdmin(req, res, next) {
   const collection = getCollection('users')
   if (!collection) {
     return res.status(503).json({ error: '数据库未连接' })
   }
-  
+
   const authHeader = req.headers.authorization
-  if (!authHeader || !authHeader.startsWith('token-')) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: '未登录' })
   }
-  
-  const userId = authHeader.replace('token-', '')
+
+  const token = authHeader.replace('Bearer ', '').trim()
   try {
-    const user = await collection.findOne({ _id: new ObjectId(userId) })
+    const { payload } = await jose.jwtVerify(token, jwtSecretKey, {
+      issuer: JWT_ISSUER
+    })
+
+    if (!payload.id) {
+      return res.status(401).json({ error: 'Token 无效' })
+    }
+
+    let user
+    try {
+      user = await collection.findOne({ _id: new ObjectId(payload.id) })
+    } catch (e) {
+      return res.status(401).json({ error: 'Token 中用户 ID 无效' })
+    }
+
     if (!user || (user.role !== 'admin' && user.role !== 'Frau')) {
       return res.status(403).json({ error: '无权限' })
     }
     req.user = user
     next()
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    if (error.code === 'ERR_JWT_EXPIRED') {
+      return res.status(401).json({ error: 'Token 已过期' })
+    }
+    if (error.code === 'ERR_JWS_INVALID' || error.code === 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
+      return res.status(401).json({ error: 'Token 签名无效' })
+    }
+    return res.status(401).json({ error: 'Token 验证失败: ' + error.message })
   }
 }
 
@@ -885,15 +964,25 @@ app.post('/api/posts', async (req, res) => {
   
   try {
     const authHeader = req.headers.authorization
-    if (!authHeader || !authHeader.startsWith('token-')) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: '请先登录' })
     }
-    
-    const tokenId = authHeader.replace('token-', '')
+
+    const token = authHeader.replace('Bearer ', '').trim()
+    const { payload } = await jose.jwtVerify(token, jwtSecretKey, { issuer: JWT_ISSUER })
+    if (!payload.id) {
+      return res.status(401).json({ error: 'Token 无效' })
+    }
+
     const usersCol = getCollection('users')
     const { ObjectId } = await import('mongodb')
-    const user = await usersCol?.findOne({ _id: new ObjectId(tokenId) })
-    
+    let user
+    try {
+      user = await usersCol?.findOne({ _id: new ObjectId(payload.id) })
+    } catch (e) {
+      return res.status(401).json({ error: 'Token 中用户 ID 无效' })
+    }
+
     if (!user || user.role !== 'admin') {
       return res.status(403).json({ error: '只有管理员可以发布文章' })
     }
