@@ -16,14 +16,27 @@ const PORT = process.env.PORT || 3001
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/?authSource=admin'
 const DB_NAME = 'ronnie_portfolio'
 
-// QQ邮箱 SMTP 配置
+// SMTP 配置（从 .env 读取；缺失时使用占位 fallback 并打印警告）
+const SMTP_USER = process.env.SMTP_USER || '__REPLACE_WITH_SMTP_USER__'
+const SMTP_PASS = process.env.SMTP_PASS || '__REPLACE_WITH_SMTP_PASS__'
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.qq.com'
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465', 10)
+const SMTP_SECURE = process.env.SMTP_SECURE !== 'false'
+const SMTP_FROM_NAME = process.env.SMTP_FROM_NAME || 'Klaus'
+const SMTP_FROM_EMAIL = process.env.SMTP_FROM_EMAIL || SMTP_USER
+const ORDER_NOTIFY_TO = process.env.ORDER_NOTIFY_TO || SMTP_USER
+
+if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  console.warn('⚠️  SMTP_USER / SMTP_PASS 未在 .env 配置，使用内置 fallback。建议尽快迁移到 .env 并删除 fallback。')
+}
+
 const emailTransporter = nodemailer.createTransport({
-  host: 'smtp.qq.com',
-  port: 465,
-  secure: true, // 使用 SSL
+  host: SMTP_HOST,
+  port: SMTP_PORT,
+  secure: SMTP_SECURE,
   auth: {
-    user: 'REDACTED-SMTP-USER@example.invalid',
-    pass: 'REDACTED-SMTP-PASS'
+    user: SMTP_USER,
+    pass: SMTP_PASS
   }
 })
 
@@ -492,8 +505,8 @@ ${order.date} ${mealType}
     const mealTypeText = order.mealType === 'breakfast' ? '早餐' : order.mealType === 'lunch' ? '午餐' : '晚餐'
     
     await emailTransporter.sendMail({
-      from: '"Klaus" <REDACTED-SMTP-USER@example.invalid>',
-      to: '735801970@qq.com',
+      from: `"${SMTP_FROM_NAME}" <${SMTP_FROM_EMAIL}>`,
+      to: ORDER_NOTIFY_TO,
       subject: `🍽️ 壮壮又馋啦 - ${order.date} ${mealTypeText}`,
       text: message,
       html: `<pre style="font-family: sans-serif; white-space: pre-wrap;">${message}</pre>`
@@ -523,6 +536,40 @@ ${order.date} ${mealType}
 }
 
 // ==================== 通知接口 / Notifications ====================
+
+// 通用通知发送端点（按 channel 路由）
+app.post('/api/notifications/send', async (req, res) => {
+  const { channel, target, subject, message } = req.body
+
+  if (!channel || !target || !message) {
+    return res.status(400).json({ error: '缺少 channel/target/message' })
+  }
+
+  try {
+    if (channel === 'email') {
+      await emailTransporter.sendMail({
+        from: `"${SMTP_FROM_NAME}" <${SMTP_FROM_EMAIL}>`,
+        to: target,
+        subject: subject || '(无主题)',
+        text: message,
+        html: `<pre style="font-family: sans-serif; white-space: pre-wrap;">${message}</pre>`
+      })
+      return res.json({ success: true, channel })
+    }
+
+    if (channel === 'whatsapp') {
+      return res.status(503).json({
+        error: 'WhatsApp 通道暂不可用',
+        detail: 'OpenClaw 已下线（commit 595c82b）'
+      })
+    }
+
+    return res.status(400).json({ error: `未知 channel: ${channel}` })
+  } catch (error) {
+    console.error(`❌ ${channel} 通知失败:`, error.message)
+    return res.status(500).json({ error: error.message })
+  }
+})
 
 // 发送 WhatsApp 通知（通过 OpenClaw CLI - 异步）
 import { spawn } from 'child_process'
@@ -564,27 +611,20 @@ app.post('/api/notifications/whatsapp', async (req, res) => {
 // 发送邮件通知
 app.post('/api/notifications/email', async (req, res) => {
   const { to, subject, body } = req.body
-  
+
   if (!to || !subject || !body) {
     return res.status(400).json({ error: '缺少邮件信息' })
   }
-  
+
   try {
-    // 使用 OpenClaw message 工具发送邮件
-    const result = await fetch('http://localhost:3001/api/notifications/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        channel: 'email',
-        target: to,
-        subject: subject,
-        message: body
-      })
+    await emailTransporter.sendMail({
+      from: `"${SMTP_FROM_NAME}" <${SMTP_FROM_EMAIL}>`,
+      to,
+      subject,
+      text: body,
+      html: `<pre style="font-family: sans-serif; white-space: pre-wrap;">${body}</pre>`
     })
-    
-    const data = await result.json()
-    console.log(`📧 邮件通知发送给 ${to}: ${data.success ? '成功' : '失败'}`)
-    
+    console.log(`📧 邮件通知发送给 ${to}: 成功`)
     res.json({ success: true, message: '邮件已发送' })
   } catch (error) {
     console.error('邮件通知错误:', error)
@@ -593,6 +633,33 @@ app.post('/api/notifications/email', async (req, res) => {
 })
 
 // ==================== 其他接口（保持原有）====================
+
+// 手动跟踪访问（前端 POST /api/track 调用）
+app.post('/api/track', async (req, res) => {
+  if (!db) {
+    return res.status(503).json({ error: '数据库未连接' })
+  }
+
+  try {
+    const { path } = req.body || {}
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] ||
+               req.headers['x-real-ip'] ||
+               req.socket?.remoteAddress ||
+               'unknown'
+    const date = new Date().toISOString().split('T')[0]
+
+    await db.collection('visits').insertOne({
+      ip,
+      date,
+      timestamp: new Date(),
+      path: path || req.path
+    })
+
+    res.json({ success: true })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
 
 // Middleware - Track visits
 app.use((req, res, next) => {

@@ -1,13 +1,19 @@
 import nodemailer from 'nodemailer'
+import 'dotenv/config'
+
+const SMTP_USER = process.env.SMTP_USER
+const SMTP_PASS = process.env.SMTP_PASS
+
+if (!SMTP_USER || !SMTP_PASS) {
+  console.error('❌ SMTP_USER / SMTP_PASS 未在 .env 配置。请先 cp .env.example .env 并填入真实值。')
+  process.exit(1)
+}
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.qq.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: 'REDACTED-SMTP-USER@example.invalid',
-    pass: 'REDACTED-SMTP-PASS'
-  }
+  host: process.env.SMTP_HOST || 'smtp.qq.com',
+  port: parseInt(process.env.SMTP_PORT || '465', 10),
+  secure: process.env.SMTP_SECURE !== 'false',
+  auth: { user: SMTP_USER, pass: SMTP_PASS }
 })
 
 const message = `🍽️ 壮壮又馋啦
@@ -16,11 +22,13 @@ const message = `🍽️ 壮壮又馋啦
 需要的食材是猪肉、酱油、糖、青菜、蒜
 备注：少放盐`
 
+const RECIPIENT = process.env.ORDER_NOTIFY_TO || SMTP_USER
+
 async function testEmail() {
   try {
     const info = await transporter.sendMail({
-      from: '"Ronnie Portfolio" <REDACTED-SMTP-USER@example.invalid>',
-      to: 'REDACTED-SMTP-USER@example.invalid',
+      from: `"${process.env.SMTP_FROM_NAME || 'Ronnie Portfolio'}" <${process.env.SMTP_FROM_EMAIL || SMTP_USER}>`,
+      to: RECIPIENT,
       subject: '🍽️ 测试点餐邮件通知',
       text: message,
       html: `<pre style="font-family: sans-serif; white-space: pre-wrap;">${message}</pre>`
