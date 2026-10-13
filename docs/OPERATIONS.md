@@ -381,8 +381,13 @@ brew services start mongodb-community    # 启动
 ### 7.1 健康检查脚本
 
 脚本：`~/Library/Scripts/RonnieBach/healthcheck.sh`  
-调用：launchd `com.ronniebach.healthcheck`，每 30 分钟（1800 秒）一次  
+调用：launchd `com.ronniebach.healthcheck`，每天 **8:00 和 13:00 北京时间** 触发（`StartCalendarInterval`）  
 日志：`~/.openclaw/workspace/memory/healthcheck-failures.log`
+
+**调度变更历史:**
+- 2026-09-02 之前：每 30 分钟一次（StartInterval 1800）
+- 2026-10-13 08:35：每 5 分钟一次（StartInterval 300）
+- 2026-10-13 11:00：每天 8:00 和 13:00 北京时间（StartCalendarInterval）
 
 ### 7.2 手动运行
 
@@ -396,7 +401,7 @@ echo "exit: $?"
 ### 7.3 立即查看下次运行时间
 
 ```bash
-launchctl print gui/$(id -u)/com.ronniebach.healthcheck | grep -E "StartInterval|state"
+launchctl print gui/$(id -u)/com.ronniebach.healthcheck | grep -E "StartCalendarInterval|state"
 ```
 
 ### 7.4 跳过 debounce 强制重新通知
@@ -404,6 +409,24 @@ launchctl print gui/$(id -u)/com.ronniebach.healthcheck | grep -E "StartInterval
 ```bash
 rm -f ~/.openclaw/workspace/memory/.ronniebach-last-failure-notified
 ```
+
+### 7.5 健康检查覆盖项（2026-10-13 共 8 项）
+
+1. 公网前端 `https://ronniebach.club`
+2. 公网后端 `https://api.ronnnbach.club/api/dishes`
+3. cloudflared 进程
+4. com.ronnnbach.api 进程（3001 端口）
+5. com.ronnnbach.web 进程（5173 端口）
+6. mongod 进程（27017 端口）
+7. 磁盘使用率（>80% 警告）
+8. cloudflared 版本（< 2026.7.0 警告；维护在脚本顶部 CLOUDFLARED_MIN_VERSION）
+
+### 7.6 通知渠道
+
+- iMessage 收件人：`ronnie.liu1@icloud.com`（脚本顶部 IMSG_TO）
+- debounce：60 分钟（同故障不重复告警）
+- 故障恢复时发 1 条 ✅ 通知
+- imsg 工具失败时回退到本地 log（不影响功能）
 
 ---
 
@@ -440,6 +463,28 @@ sleep 15
 
 curl -s -o /dev/null -w "%{http_code}\n" --max-time 30 https://ronniebach.club
 ```
+
+**如果持续 530 + log 中有 `TLS handshake with edge error: EOF`**：
+
+这通常是 cloudflared 版本过期（DNS 解析到非 Cloudflare 网段的 IP）。检查并升级：
+
+```bash
+# 1. 查看版本
+cloudflared --version
+
+# 2. 如 < 当前月份-3，应升级
+brew upgrade cloudflared
+
+# 3. 重启
+launchctl kickstart -k gui/$(id -u)/homebrew.mxcl.cloudflared
+sleep 20
+
+# 4. 验证
+cloudflared tunnel list    # 应显示 CONNECTIONS 列非空
+curl -s -o /dev/null -w "%{http_code}\n" --max-time 20 https://ronniebach.club
+```
+
+**历史案例:** 2026-10-13 — cloudflared 2026.2.0 过期 8 个月，TLS 握手全部 EOF（IP 解析到 198.18.0.x）。升级到 2026.10.0 立即恢复。
 
 ### 8.3 网站 521 / 523
 
@@ -516,7 +561,52 @@ launchctl kickstart gui/$(id -u)/com.ronniebach.api
 
 见 [已知问题 #1](#11-已知问题)。
 
-### 8.8 健康检查脚本不可用
+### 8.8 敏感路径返回 404（不是 200）
+
+**背景:** 2026-10-13 安全审计发现 5661 次访问中有 5000+ 次来自自动化扫描器（`.env` / `.git` / `.ssh` / `@fs` / actuator 等路径）。原本这些路径会走 SPA fallback 返回 `index.html`（HTTP 200），虽然不泄露数据，但会让扫描器误判"路径存在"从而继续穷举，浪费 tunnel 带宽并污染日志。
+
+**已实施:** 两处拦截，规则一致：
+
+| 位置 | 作用范围 |
+|------|---------|
+| `vite.config.ts` → `blockSensitivePaths()` 插件 | 5173（`ronniebach.club`），覆盖 `configureServer` + `configurePreviewServer` |
+| `server/index.js` → `BLOCKED_PATTERNS` 中间件 | 3001（`api.ronniebach.club`），放在 `express.static` **之前** |
+
+Express 侧放在 `express.static` 之前是刻意的：即使 `dist/` 内误放了 `.env` 之类文件也会被挡下。
+
+**黑名单规则**（两处必须同步维护）：
+
+```js
+/^\/\./                                  // 所有点开头
+/^\/@fs\//                               // Vite 专用路径
+/\.(pem|key|p12|pfx|jks|keystore)$/i
+/\/id_(rsa|dsa|ecdsa|ed25519)$/
+/\.(php|asp|aspx|jsp|cgi|pl)$/i
+/^\/actuator(\/|$)/                      // Spring Boot
+/^\/console(\/|$)/                       // Ruby/Rails
+/^\/__debug__(\/|$)/
+/^\/wp-(json|content|includes|admin)(\/|$)/
+/^\/vendor\/phpunit(\/|$)/
+/^\/server-(status|info)$/
+/^\/(swagger|openapi|api-docs)\.json$/
+```
+
+**验证:**
+
+```bash
+# 应返回 404
+curl -s -o /dev/null -w "%{http_code}\n" https://ronniebach.club/.env
+curl -s -o /dev/null -w "%{http_code}\n" https://ronniebach.club/.git/config
+curl -s -o /dev/null -w "%{http_code}\n" https://ronniebach.club/@fs/.env
+
+# 应返回 200（SPA 路由未受影响）
+curl -s -o /dev/null -w "%{http_code}\n" https://ronniebach.club/blog
+curl -s -o /dev/null -w "%{http_code}\n" https://ronniebach.club/admin
+```
+
+**注意:** `/admin` 是本项目真实路由（管理后台），**不在黑名单内**，不要误加。
+
+### 8.9 健康检查脚本不可用
 
 ```bash
 # 手动运行看错误

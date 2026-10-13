@@ -1207,6 +1207,31 @@ app.post('/api/scores', async (req, res) => {
   }
 })
 
+// 敏感路径拦截：命中则返回 404，不再走 SPA fallback
+// 目的：避免互联网扫描器看到 200 就继续穷举路径（与 vite.config.ts 的 blockSensitivePaths 保持一致）
+// 注意：必须在 express.static 之前，防止 dist/ 内误放的敏感文件被直接读出
+const BLOCKED_PATTERNS = [
+  /^\/\./,                        // 所有点开头：/.env /.git /.ssh /.npmrc /.htpasswd /.bashrc /.DS_Store
+  /^\/@fs\//,                     // Vite 框架专用路径（/@fs/.env 等）
+  /\.(pem|key|p12|pfx|jks|keystore)$/i,
+  /\/id_(rsa|dsa|ecdsa|ed25519)$/,
+  /\.(php|asp|aspx|jsp|cgi|pl)$/i,
+  /^\/actuator(\/|$)/,
+  /^\/console(\/|$)/,
+  /^\/__debug__(\/|$)/,
+  /^\/wp-(json|content|includes|admin)(\/|$)/,
+  /^\/vendor\/phpunit(\/|$)/,
+  /^\/server-(status|info)$/,
+  /^\/(swagger|openapi|api-docs)\.json$/
+]
+
+app.use((req, res, next) => {
+  if (BLOCKED_PATTERNS.some((re) => re.test(req.path))) {
+    return res.status(404).type('text/plain').send('Not Found')
+  }
+  next()
+})
+
 // Static files
 const distPath = resolve(__dirname, '../dist')
 app.use(express.static(distPath))
